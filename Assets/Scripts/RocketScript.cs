@@ -25,7 +25,7 @@ public class RocketScript : MonoBehaviour {
 
     float T; // Orbital Period
 
-    float t0; // Epoch (Initial time at periapsis)
+    float t0; // Epoch (Initial time at periapsis) - I use this to store the last time the orbital elements were changed
 
     float i; // Inclination
 
@@ -39,13 +39,14 @@ public class RocketScript : MonoBehaviour {
 
     public Vector3 velocity = new Vector3(-1f, 15f);
 
+    float mass = 1;
+
 
 
     // Start is called before the first frame update
     void Start() {
-        this.t0 = Time.time;
         CalculateOrbitalElementsFromPositionVelocity(transform.position, velocity);
-
+        this.t0 = Time.time;
     }
 
     // Update is called once per frame
@@ -66,15 +67,23 @@ public class RocketScript : MonoBehaviour {
     }
 
     void DoThrust() {
-        //Vector3 v = myRigidbody2D.velocity;
-        //myRigidbody2D.AddForce(v.normalized / 10);
+        // a = F / m
+        float force = 1f; // (N)
+        Vector3 acceleration = Time.deltaTime * (force / mass) * velocity.normalized;
+
+        //velocity += acceleration;
         CalculateOrbitalElementsFromPositionVelocity(transform.position, velocity);
+        //t0 = Time.time;
     }
 
     void DoNThrust() {
-        //Vector3 v = myRigidbody2D.velocity;
-        //myRigidbody2D.AddForce(-v.normalized / 10);
+        // a = F / m
+        float force = -1f; // (N)
+        Vector3 acceleration = Time.deltaTime * (force / mass) * velocity.normalized;
+
+        //velocity += acceleration;
         CalculateOrbitalElementsFromPositionVelocity(transform.position, velocity);
+        //t0 = Time.time;
     }
     
 
@@ -218,10 +227,10 @@ public class RocketScript : MonoBehaviour {
         this.e_ = ((v * v - sgp / r) * r_ - Vector3.Dot(r_, v_) * v_) / sgp;
         this.e = e_.magnitude;
 
-        float specificmechanicalenergy = (v * v) / 2 - (sgp / r); // Specific mechanical energy
+        //float specificmechanicalenergy = (v * v) / 2 - (sgp / r); // Specific mechanical energy
+        //this.a = -(sgp / (2 * (specificmechanicalenergy)));
+        this.a = 1 / (2 / r - (v * v) / sgp);
 
-
-        this.a = -(sgp / (2 * (specificmechanicalenergy)));
 
         this.T = 2 * Mathf.PI * Mathf.Sqrt((a * a * a) / sgp);
 
@@ -232,7 +241,10 @@ public class RocketScript : MonoBehaviour {
 
         this.omega = Mathf.Acos(nodevector.x / nodevector.magnitude);
         if (nodevector.y < 0) this.omega = 2 * Mathf.PI - omega;
-        if (i == 0) omega = 0;
+        if (i == 0) {
+            omega = 0;
+            nodevector = Vector3.right;
+        }
         //Debug.Log(string.Format("(i == 0) = {0}", (i == 0)));
 
         this.w = Mathf.Acos(Vector3.Dot(nodevector, e_) / (nodevector.magnitude * e));
@@ -277,7 +289,7 @@ public class RocketScript : MonoBehaviour {
         float M = n * (timeSincePeriapsis); // Mean Anomaly (rad)
 
         float E = M; // Eccentric Anomaly (rad) - E
-        for (int i=0;i<100;i++) {
+        for (int i=0;i>-1;i++) {
             var dE = (E - e * Mathf.Sin(E) - M) / (1 - e * Mathf.Cos(E));
             E -= dE;
             if (Mathf.Abs(dE) < 1e-6) break;
@@ -286,6 +298,25 @@ public class RocketScript : MonoBehaviour {
         //Debug.Log(E);
 
         // Add stuff about init E here
+
+        // Get the initial E of the
+
+
+        //float sinE = Mathf.Sqrt(1 - e * e) * Mathf.Sin(f);
+        //float cosE = e + Mathf.Cos(f);
+
+        //float initE2 = Mathf.Atan2(sinE, cosE);
+
+        float aside = e + Mathf.Cos(f);
+        float hside = 1 + e * Mathf.Cos(f);
+        float initE = Mathf.Acos(aside / hside);
+        if (f > Mathf.PI) initE = 2 * Mathf.PI - initE;
+
+        //Debug.Log(string.Format("My Calc initE: {0}", initE % (2 * Mathf.PI)));
+        //Debug.Log(string.Format("My Calc initE2: {0}", initE2 % (2 * Mathf.PI)));
+        //Debug.Log(string.Format("Answer: {0}", E % (2 * Mathf.PI)));
+
+        E += initE;
 
 
 
@@ -319,7 +350,7 @@ public class RocketScript : MonoBehaviour {
 
 
         Vector3 r_ = new Vector3(x, y, z);
-        Vector3 v_ = new Vector3(vx, vx, vz);
+        Vector3 v_ = new Vector3(vx, vy, vz);
 
         if (setvariables) {
             transform.position = r_;
