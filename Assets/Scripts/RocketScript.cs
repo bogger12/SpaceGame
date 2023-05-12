@@ -33,7 +33,8 @@ public class RocketScript : MonoBehaviour {
 
     float f; // True Anomaly
 
-
+    // To store the value of M after every element recalc
+    float initM;
 
     float bodyOfInfluenceMass = 5.9722E12f;
 
@@ -51,7 +52,7 @@ public class RocketScript : MonoBehaviour {
 
     // Update is called once per frame
     private void Update() {
-        if (Input.GetKeyDown(KeyCode.W)) {
+        if (Input.GetKey(KeyCode.W)) {
             DoThrust();
         }
         if (Input.GetKey(KeyCode.S)) {
@@ -71,7 +72,7 @@ public class RocketScript : MonoBehaviour {
         float force = 1f; // (N)
         Vector3 acceleration = Time.deltaTime * (force / mass) * velocity.normalized;
 
-        //velocity += acceleration;
+        velocity += acceleration;
         CalculateOrbitalElementsFromPositionVelocity(transform.position, velocity);
         //t0 = Time.time;
     }
@@ -81,7 +82,7 @@ public class RocketScript : MonoBehaviour {
         float force = -1f; // (N)
         Vector3 acceleration = Time.deltaTime * (force / mass) * velocity.normalized;
 
-        //velocity += acceleration;
+        velocity += acceleration;
         CalculateOrbitalElementsFromPositionVelocity(transform.position, velocity);
         //t0 = Time.time;
     }
@@ -266,6 +267,18 @@ public class RocketScript : MonoBehaviour {
         this.f = Mathf.Acos(value);
         if (Vector3.Dot(r_, v_) < 0) this.f = 2 * Mathf.PI - f;
 
+
+        // Find M at this point. Then use that to find t0
+
+        float M = Mathf.Atan2(-Mathf.Sqrt(1 - e * e) * Mathf.Sin(f), -e - Mathf.Cos(f)) + Mathf.PI - e * ((Mathf.Sqrt(1 - e * e) * Mathf.Sin(f)) / (1 + e * Mathf.Cos(f)));
+        // M at t0 = 0. Thus the difference in t is M/n
+
+        float n = (2 * Mathf.PI) / T; // Mean motion (rad)
+
+        t0 = Time.time - (M / n); // TODO: idk if this will work
+
+        initM = M;
+
         Debug.Log(string.Format("Position, Velocity: {0}, {1}", r_, v_));
 
         Debug.Log(string.Format("nodevector: {0}", nodevector));
@@ -288,6 +301,8 @@ public class RocketScript : MonoBehaviour {
         float n = (2 * Mathf.PI) / T; // Mean motion (rad)
         float M = n * (timeSincePeriapsis); // Mean Anomaly (rad)
 
+        //M += initM;
+
         float E = M; // Eccentric Anomaly (rad) - E
         for (int i=0;i>-1;i++) {
             var dE = (E - e * Mathf.Sin(E) - M) / (1 - e * Mathf.Cos(E));
@@ -295,28 +310,21 @@ public class RocketScript : MonoBehaviour {
             if (Mathf.Abs(dE) < 1e-6) break;
         }
 
-        //Debug.Log(E);
-
-        // Add stuff about init E here
-
-        // Get the initial E of the
-
 
         //float sinE = Mathf.Sqrt(1 - e * e) * Mathf.Sin(f);
         //float cosE = e + Mathf.Cos(f);
-
         //float initE2 = Mathf.Atan2(sinE, cosE);
 
-        float aside = e + Mathf.Cos(f);
-        float hside = 1 + e * Mathf.Cos(f);
-        float initE = Mathf.Acos(aside / hside);
-        if (f > Mathf.PI) initE = 2 * Mathf.PI - initE;
+        //float aside = e + Mathf.Cos(f);
+        //float hside = 1 + e * Mathf.Cos(f);
+        //float initE = Mathf.Acos(aside / hside);
+        //if (f > Mathf.PI) initE = 2 * Mathf.PI - initE;
 
         //Debug.Log(string.Format("My Calc initE: {0}", initE % (2 * Mathf.PI)));
         //Debug.Log(string.Format("My Calc initE2: {0}", initE2 % (2 * Mathf.PI)));
         //Debug.Log(string.Format("Answer: {0}", E % (2 * Mathf.PI)));
 
-        E += initE;
+        //E += initE; // When this is active, t0 must be set to the current time when recalculating orbital elements
 
 
 
