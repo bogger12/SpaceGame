@@ -9,6 +9,10 @@ public class RocketScript : MonoBehaviour {
     public GameObject bodyOfInfluence;
 
     const float gravconst = 6.6725985E-11f; // fundamental universal constant
+    const float bodyOfInfluenceMass = 5.9722E12f;
+
+    float sgp = bodyOfInfluenceMass * gravconst; // Standard gravitational parameter - Mu
+
 
     // Orbital Elements of the Object's orbit
 
@@ -33,10 +37,6 @@ public class RocketScript : MonoBehaviour {
 
     float f; // True Anomaly
 
-    // To store the value of M after every element recalc
-    float initM;
-
-    float bodyOfInfluenceMass = 5.9722E12f;
 
     public Vector3 velocity = new Vector3(-1f, 15f);
 
@@ -53,10 +53,14 @@ public class RocketScript : MonoBehaviour {
     // Update is called once per frame
     private void Update() {
         if (Input.GetKey(KeyCode.W)) {
-            DoThrust();
+            addForce(velocity.normalized);
         }
         if (Input.GetKey(KeyCode.S)) {
-            DoNThrust();
+            addForce(-velocity.normalized);
+        }
+        if (Input.GetKey(KeyCode.T)) {
+            // Test update
+            CalculateOrbitalElementsFromPositionVelocity(transform.position, velocity);
         }
 
 
@@ -67,153 +71,21 @@ public class RocketScript : MonoBehaviour {
         GetPositionVelocityatTime(timesinceperiapsis);
     }
 
-    void DoThrust() {
-        // a = F / m
-        float force = 1f; // (N)
-        Vector3 acceleration = Time.deltaTime * (force / mass) * velocity.normalized;
+    void addForce(Vector3 force) {
+        Vector3 thrustacc = Time.deltaTime * force / mass;
 
-        velocity += acceleration;
+
+        // F = (GMm)/r^2
+        // a = (GM)/r^2
+        Vector3 difference = bodyOfInfluence.transform.position - transform.position;
+        float r = difference.magnitude;
+        Vector3 gravacc = Time.deltaTime * (sgp / (r * r)) * difference.normalized;
+
+        velocity += gravacc;
+        velocity += thrustacc;
+        transform.position += velocity * Time.deltaTime; // Adding acceleration of forces
         CalculateOrbitalElementsFromPositionVelocity(transform.position, velocity);
-        //t0 = Time.time;
     }
-
-    void DoNThrust() {
-        // a = F / m
-        float force = -1f; // (N)
-        Vector3 acceleration = Time.deltaTime * (force / mass) * velocity.normalized;
-
-        velocity += acceleration;
-        CalculateOrbitalElementsFromPositionVelocity(transform.position, velocity);
-        //t0 = Time.time;
-    }
-    
-
-    //Vector2 GetGravityForce() { // Part of this is written incorrectly causing F2 to move around
-    //    Vector2 gravityvector = (bodyOfInfluence.transform.position - transform.position); // Vector of direction from this entity to its gravitational influence
-    //    float radius = gravityvector.magnitude; // covnerting km to m
-    //    Debug.Log(string.Format("gravityvector: {0}", gravityvector));
-    //    Debug.Log(string.Format("radius: {0}", radius));
-
-    //    float bodymass = 5.9722E12f;
-
-    //    float gravacc = (gravconst * bodymass * myRigidbody2D.mass) / (radius * radius);
-
-    //    return myRigidbody2D.mass * gravacc * gravityvector.normalized;
-
-    //    //Debug.Log(string.Format(
-    //    //    "Acc of Gravity (m/s-2): {0}\n" +
-    //    //    "Radius (m): {1}",
-    //    //    gravacc, radius));
-
-    //}
-
-    //bool isInElipse(Vector2 r) {
-    //    Vector2 v = myRigidbody2D.velocity;
-
-
-    //    //float sgp = myRigidbody2D.mass * 1000 * gravconst; // Standard gravitational parameter;
-    //    float sgp = 5.9722E12f * gravconst; // Standard gravitational parameter;
-
-    //    float a = (sgp * r.magnitude) / (2 * sgp - r.magnitude * (v * v).magnitude); // Semi-major axis
-
-    //    //Vector2 h = v * r;
-    //    float h = r.x * v.y - r.y * v.x;
-
-    //    Vector2 e = (r / r.magnitude) - (v * h) / (sgp); // Eccentricity vector
-
-    //    Vector2 F2 = -2 * a * e;
-
-    //    Debug.Log(string.Format(
-    //        "a: {0}\n" +
-    //        "e: {1}" +
-    //        "F2: {2}",
-    //        a, e.normalized, F2));
-    //    Debug.Log((F2 - r).magnitude + r.magnitude);
-    //    Debug.Log(2 * a);
-    //    Debug.Log(e.magnitude);
-
-
-    //    Debug.DrawLine(transform.position, transform.position + (Vector3)v/1000, Color.red);
-    //    //Debug.DrawLine(new Vector3(0,5,0), new Vector3(0, 10, 0), Color.red);
-    //    temp1.transform.position = F2;
-    //    temp2.transform.position = (Vector2)bodyOfInfluence.transform.position + a*e.normalized;
-
-    //    return (F2 - r).magnitude + r.magnitude == 2 * a;
-    //}
-
-    //void GetOrbitalElementsFromPositionVelocity(Vector3 r_, Vector3 v_) {
-    //    // r_ = position vector, v_ = velocity vector
-
-    //    float sgp = bodyOfInfluenceMass * gravconst; // Standard gravitational parameter;
-    //    Debug.Log(string.Format("sgp: {0}", sgp));
-
-    //    // h_ = angular momentum
-    //    Vector3 h = Vector3.Cross(r_, v_);
-
-
-    //    Vector2 e = ((v_.magnitude * v_.magnitude - sgp / r_.magnitude) * r_ - Vector2.Dot(r_, v_) * v_) / sgp;
-
-    //    float specificmechanicalenergy = (v_.magnitude * v_.magnitude) / 2 - (sgp / r_.magnitude);
-
-    //    float a = -(sgp / (2 * (specificmechanicalenergy)));
-
-
-    //    Debug.Log(string.Format("specific mechanical energy: {0}", specificmechanicalenergy));
-    //    Debug.Log(string.Format("eccentricity: {0}", e.magnitude));
-    //    Debug.Log(string.Format("semi-major axis: {0}", a));
-
-    //    Vector3 F2 = -2 * a * e;
-    //    temp1.transform.position = F2;
-
-    //    Debug.DrawLine(transform.position, transform.position + (Vector3)v, Color.red);
-
-
-    //    float timesinceperiapsis = 0; // unit: seconds - t
-
-
-    //    Vector3 nhat = Vector3.Cross(Vector3.forward, h);
-
-    //    float orbitalPeriod = 2 * Mathf.PI * Mathf.Sqrt((a * a * a) / sgp);
-
-    //    float meanmotion = (2 * Mathf.PI) / orbitalPeriod; // unit: radians - n
-
-    //    float M = timesinceperiapsis * meanmotion;
-
-    //    float E = M; // Eccentric Anomaly, unit: radians - E
-    //    while (true) {
-    //        var dE = (E - e.magnitude * Mathf.Sin(E) - M) / (1 - e.magnitude * Mathf.Cos(E));
-    //        E -= dE;
-    //        if (Mathf.Abs(dE) < 1e-6) break;
-    //    }
-
-    //    float P = a * (Mathf.Cos(E) - e.magnitude);
-    //    float Q = a * Mathf.Sin(E) * Mathf.Sqrt(1 - Mathf.Pow(e.magnitude, 2));
-
-
-
-
-
-    //    float angle = 60;
-
-    //    Vector2 drawfromangle = Vector2.zero;
-
-    //    Vector2 lastpoint = Vector2.zero;
-
-    //    for (int i = 0; i < 50; i += 5) {
-    //        float seperationdistance = ((h.magnitude * h.magnitude) / (myRigidbody2D.mass * sgp)) * (1 / (1 + e.magnitude * Mathf.Cos(i)));
-    //        Debug.Log("seperationdistance: " + seperationdistance);
-
-    //        Vector2 lineend = new Vector2(Mathf.Cos(i) * seperationdistance, Mathf.Sin(i) * seperationdistance);
-    //        Debug.DrawLine(lastpoint, lineend, Color.blue);
-    //        lastpoint = lineend;
-
-    //    }
-
-
-
-    //}
-
-    // Calculate Orbital Elements from Position and Velocity vectors
 
     void CalculateOrbitalElementsFromPositionVelocity(Vector3 r_, Vector3 v_) {
 
@@ -269,15 +141,13 @@ public class RocketScript : MonoBehaviour {
 
 
         // Find M at this point. Then use that to find t0
+        // M at t0 = 0. Thus the difference in t is M/n
 
         float M = Mathf.Atan2(-Mathf.Sqrt(1 - e * e) * Mathf.Sin(f), -e - Mathf.Cos(f)) + Mathf.PI - e * ((Mathf.Sqrt(1 - e * e) * Mathf.Sin(f)) / (1 + e * Mathf.Cos(f)));
-        // M at t0 = 0. Thus the difference in t is M/n
 
         float n = (2 * Mathf.PI) / T; // Mean motion (rad)
 
         t0 = Time.time - (M / n); // TODO: idk if this will work
-
-        initM = M;
 
         Debug.Log(string.Format("Position, Velocity: {0}, {1}", r_, v_));
 
@@ -301,10 +171,8 @@ public class RocketScript : MonoBehaviour {
         float n = (2 * Mathf.PI) / T; // Mean motion (rad)
         float M = n * (timeSincePeriapsis); // Mean Anomaly (rad)
 
-        //M += initM;
-
         float E = M; // Eccentric Anomaly (rad) - E
-        for (int i=0;i>-1;i++) {
+        for (int i=0;i<1000;i++) {
             var dE = (E - e * Mathf.Sin(E) - M) / (1 - e * Mathf.Cos(E));
             E -= dE;
             if (Mathf.Abs(dE) < 1e-6) break;
@@ -317,11 +185,15 @@ public class RocketScript : MonoBehaviour {
 
         //float aside = e + Mathf.Cos(f);
         //float hside = 1 + e * Mathf.Cos(f);
-        //float initE = Mathf.Acos(aside / hside);
-        //if (f > Mathf.PI) initE = 2 * Mathf.PI - initE;
+        //float myE = Mathf.Acos(aside / hside);
+        //if (f > Mathf.PI) myE = 2 * Mathf.PI - myE;
 
         //Debug.Log(string.Format("My Calc initE: {0}", initE % (2 * Mathf.PI)));
         //Debug.Log(string.Format("My Calc initE2: {0}", initE2 % (2 * Mathf.PI)));
+
+        //float myE = Mathf.Acos()
+
+        //Debug.Log(string.Format("My Calc E: {0}", myE % (2 * Mathf.PI)));
         //Debug.Log(string.Format("Answer: {0}", E % (2 * Mathf.PI)));
 
         //E += initE; // When this is active, t0 must be set to the current time when recalculating orbital elements
