@@ -166,13 +166,13 @@ public class RocketScript : MonoBehaviour {
 
     }
 
-    Vector3 GetPositionVelocityatTime(float timeSincePeriapsis, bool setvariables=true) {
+    Vector3 GetPositionVelocityatTime(float timeSincePeriapsis, bool setvariables=true, bool evenmotion=false) {
 
         float n = (2 * Mathf.PI) / T; // Mean motion (rad)
         float M = n * (timeSincePeriapsis); // Mean Anomaly (rad)
 
         float E = M; // Eccentric Anomaly (rad) - E
-        for (int i=0;i<1000;i++) {
+        if (!evenmotion) for (int i=0;i<1000;i++) {
             var dE = (E - e * Mathf.Sin(E) - M) / (1 - e * Mathf.Cos(E));
             E -= dE;
             if (Mathf.Abs(dE) < 1e-6) break;
@@ -245,7 +245,7 @@ public class RocketScript : MonoBehaviour {
         int numpoints = 100;
         lineRenderer.positionCount = numpoints;
         for (int i = 0; i < numpoints; i++) {
-            lineRenderer.SetPosition(i, GetPositionVelocityatTime((T / (float)numpoints) * (float)i, false));
+            lineRenderer.SetPosition(i, GetPositionVelocityatTime((T / (float)numpoints) * (float)i, false, true));
         }
     }
 
