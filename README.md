@@ -4,10 +4,13 @@ A Space Game made with Unity.
 ## Resource List
 
 **[Astrophysics Equations](https://static1.squarespace.com/static/54b38552e4b055a31e5e3e47/t/5b5c071970a6addd33a8a85c/1532757806053/ultimate-astrophysics-cheat-sheet_1-0.pdf)**
-
+___
 ### General
 
-Orbits/Gravity:
+<details open>
+  
+**<summary>Orbits/Gravity</summary>**
+  
 * https://en.wikipedia.org/wiki/Earth
 * https://en.wikipedia.org/wiki/Gravitational_constant
 * https://en.wikipedia.org/wiki/Orbit_equation
@@ -16,35 +19,39 @@ Orbits/Gravity:
 * https://en.wikipedia.org/wiki/Ellipse
 * https://en.wikipedia.org/wiki/Kepler%27s_laws_of_planetary_motion
 * https://en.wikipedia.org/wiki/Orbital_elements
+</details>
 
-Vectors:
-* https://en.wikipedia.org/wiki/Vector_(mathematics_and_physics)
-* https://en.wikipedia.org/wiki/Unit_vector
-* https://en.wikipedia.org/wiki/Cross_product
-* https://en.wikipedia.org/wiki/Dot_product
-* http://physics.bu.edu/~redner/211-sp06/class03/comp_vectors.html
+<details open>
+  
+**<summary>Vectors</summary>**
+
+* [Vector Definition](https://en.wikipedia.org/wiki/Vector_(mathematics_and_physics))
+* [Unit Vector](https://en.wikipedia.org/wiki/Unit_vector)
+* [Cross Product](https://en.wikipedia.org/wiki/Cross_product)
+* [Dot Product](https://en.wikipedia.org/wiki/Dot_product)
+* **[Vector Lesson](http://physics.bu.edu/~redner/211-sp06/class03/comp_vectors.html)**
+</details>
 
 
-
+___
 ### Orbital Elements:
-* _e_ [Eccentricity](https://en.wikipedia.org/wiki/Orbital_eccentricity) | **e** [Eccentricity Vector](https://en.wikipedia.org/wiki/Eccentricity_vector)
-* _a_ [Semi Major Axis](https://en.wikipedia.org/wiki/Semi-major_and_semi-minor_axes)
-* _i_ [Inclination](https://en.wikipedia.org/wiki/Orbital_inclination)
-* _Ω_ [Longtitude of the Ascending Node](https://en.wikipedia.org/wiki/Longitude_of_the_ascending_node)
-* _ω_ [Argument of Periapsis](https://en.wikipedia.org/wiki/Argument_of_periapsis)
-* _ν_ [True Anomaly](https://en.wikipedia.org/wiki/True_anomaly) (usually at epoch)
+* $e$&nbsp;&nbsp;[Eccentricity](https://en.wikipedia.org/wiki/Orbital_eccentricity) | $\textbf{e}$&nbsp;&nbsp;[Eccentricity Vector](https://en.wikipedia.org/wiki/Eccentricity_vector)
+* $a$&nbsp;&nbsp;[Semi Major Axis](https://en.wikipedia.org/wiki/Semi-major_and_semi-minor_axes)
+* $i$&nbsp;&nbsp;[Inclination](https://en.wikipedia.org/wiki/Orbital_inclination)
+* $Ω$&nbsp;&nbsp;[Longtitude of the Ascending Node](https://en.wikipedia.org/wiki/Longitude_of_the_ascending_node)
+* $ω$&nbsp;&nbsp;[Argument of Periapsis](https://en.wikipedia.org/wiki/Argument_of_periapsis)
+* $ν$&nbsp;&nbsp;[True Anomaly](https://en.wikipedia.org/wiki/True_anomaly) (usually at epoch)
 
+###### Other Important Elements:
+* $t_0$&nbsp;&nbsp;[Epoch](https://en.wikipedia.org/wiki/Epoch_(astronomy))
+* $T$&nbsp;&nbsp;[Orbital Period](https://en.wikipedia.org/wiki/Orbital_period)
+* $M$&nbsp;&nbsp;[Mean Anomaly](https://en.wikipedia.org/wiki/Mean_anomaly)
+* $E$&nbsp;&nbsp;[Eccentric Anomaly](https://en.wikipedia.org/wiki/Eccentric_anomaly)
+* $h$&nbsp;&nbsp;[Specific Angular momentum](https://en.wikipedia.org/wiki/Specific_angular_momentum)
 
-#### Other Important Elements:
-* _t<sub>0</sub>_ [Epoch](https://en.wikipedia.org/wiki/Epoch_(astronomy))
-* _T_ [Orbital Period](https://en.wikipedia.org/wiki/Orbital_period)
-* _M_ [Mean Anomaly](https://en.wikipedia.org/wiki/Mean_anomaly)
-* _E_ [Eccentric Anomaly](https://en.wikipedia.org/wiki/Eccentric_anomaly)
-* _h_ [Specific Angular momentum](https://en.wikipedia.org/wiki/Specific_angular_momentum)
+___
 
-
-
-Helpful Articles about Programming:
+#### Helpful Articles about Programming:
 * https://mikhail-szugalew.medium.com/simulating-gravity-in-unity-ae8258a80b6d
 * https://phys.libretexts.org/Bookshelves/Astronomy__Cosmology/Celestial_Mechanics_(Tatum)/09%3A_The_Two_Body_Problem_in_Two_Dimensions/9.08%3A_Orbital_Elements_and_Velocity_Vector#mjx-eqn-9.5.31
 * https://space.stackexchange.com/questions/1904/how-to-programmatically-calculate-orbital-elements-using-position-velocity-vecto
