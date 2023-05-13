@@ -36,7 +36,7 @@ Vectors:
 
 
 #### Other Important Elements:
-* _t0_ [Epoch](https://en.wikipedia.org/wiki/Epoch_(astronomy))
+* _t<sub>0</sub>_ [Epoch](https://en.wikipedia.org/wiki/Epoch_(astronomy))
 * _T_ [Orbital Period](https://en.wikipedia.org/wiki/Orbital_period)
 * _M_ [Mean Anomaly](https://en.wikipedia.org/wiki/Mean_anomaly)
 * _E_ [Eccentric Anomaly](https://en.wikipedia.org/wiki/Eccentric_anomaly)
@@ -51,8 +51,8 @@ Helpful Articles about Programming:
 * https://space.stackexchange.com/questions/52090/how-can-i-calculate-the-future-position-of-a-satellite-orbiting-a-central-body-a
 * https://space.stackexchange.com/questions/4093/how-can-i-predict-what-an-objects-orbital-state-vectors-will-be-in-the-future?rq=1
 * https://space.stackexchange.com/questions/3781/calculating-the-time-since-periapse-of-an-orbital-position
-* https://physics.stackexchange.com/questions/333876/how-does-one-calculate-the-time-to-go-from-one-point-in-an-orbit-to-another#:~:text=tp(r)%3D√,tp(t1).
-+ **https://space.stackexchange.com/questions/8911/determining-orbital-position-at-a-future-point-in-time**
+* https://physics.stackexchange.com/questions/333876/how-does-one-calculate-the-time-to-go-from-one-point-in-an-orbit-to-another#:~:text=tp(r)%3D√,tp(t1)
+* **https://space.stackexchange.com/questions/8911/determining-orbital-position-at-a-future-point-in-time**
 
 Orbital Elements Calculator:
 * http://orbitsimulator.com/formulas/OrbitalElements.html
