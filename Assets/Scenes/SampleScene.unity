@@ -268,7 +268,7 @@ GameObject:
   - component: {fileID: 928978670}
   - component: {fileID: 928978668}
   m_Layer: 0
-  m_Name: Dynamic Sprite
+  m_Name: Rocket
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -372,7 +372,7 @@ MonoBehaviour:
   UIController: {fileID: 622174663}
   lineRenderer: {fileID: 928978670}
   bodyOfInfluence: {fileID: 1097531151}
-  velocity: {x: -1, y: 15}
+  velocity: {x: -1, y: 15, z: 0}
 --- !u!96 &928978669
 TrailRenderer:
   serializedVersion: 2

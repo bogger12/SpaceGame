@@ -100,6 +100,10 @@ public class RocketScript : MonoBehaviour {
         this.e_ = ((v * v - sgp / r) * r_ - Vector3.Dot(r_, v_) * v_) / sgp;
         this.e = e_.magnitude;
 
+        if (e>=1) {
+            Debug.LogError(string.Format("The eccentricity is too high. Haven't added calculations for this yet. e = {0}", e));
+        }
+
         //float specificmechanicalenergy = (v * v) / 2 - (sgp / r); // Specific mechanical energy
         //this.a = -(sgp / (2 * (specificmechanicalenergy)));
         this.a = 1 / (2 / r - (v * v) / sgp);
@@ -108,7 +112,7 @@ public class RocketScript : MonoBehaviour {
         this.T = 2 * Mathf.PI * Mathf.Sqrt((a * a * a) / sgp);
 
         this.i = Mathf.Acos(h.z / h.magnitude);
-        this.i = 0; // TODO: FIX ONCE 2D WORKS
+        //this.i = 0; // TODO: FIX ONCE 2D WORKS
 
         Vector3 nodevector = Vector3.Cross(Vector3.forward, h);
 
@@ -147,7 +151,7 @@ public class RocketScript : MonoBehaviour {
 
         float n = (2 * Mathf.PI) / T; // Mean motion (rad)
 
-        t0 = Time.time - (M / n); // TODO: idk if this will work
+        t0 = Time.time - (M / n); // Sets the epoch to the time of periapsis
 
         Debug.Log(string.Format("Position, Velocity: {0}, {1}", r_, v_));
 
@@ -177,28 +181,6 @@ public class RocketScript : MonoBehaviour {
             E -= dE;
             if (Mathf.Abs(dE) < 1e-6) break;
         }
-
-
-        //float sinE = Mathf.Sqrt(1 - e * e) * Mathf.Sin(f);
-        //float cosE = e + Mathf.Cos(f);
-        //float initE2 = Mathf.Atan2(sinE, cosE);
-
-        //float aside = e + Mathf.Cos(f);
-        //float hside = 1 + e * Mathf.Cos(f);
-        //float myE = Mathf.Acos(aside / hside);
-        //if (f > Mathf.PI) myE = 2 * Mathf.PI - myE;
-
-        //Debug.Log(string.Format("My Calc initE: {0}", initE % (2 * Mathf.PI)));
-        //Debug.Log(string.Format("My Calc initE2: {0}", initE2 % (2 * Mathf.PI)));
-
-        //float myE = Mathf.Acos()
-
-        //Debug.Log(string.Format("My Calc E: {0}", myE % (2 * Mathf.PI)));
-        //Debug.Log(string.Format("Answer: {0}", E % (2 * Mathf.PI)));
-
-        //E += initE; // When this is active, t0 must be set to the current time when recalculating orbital elements
-
-
 
         // Calculate X, Y and Z values
         float P = a * (Mathf.Cos(E) - e);
