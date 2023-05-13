@@ -11,6 +11,7 @@ Orbits/Gravity:
 * https://en.wikipedia.org/wiki/Earth
 * https://en.wikipedia.org/wiki/Gravitational_constant
 * https://en.wikipedia.org/wiki/Orbit_equation
+* https://en.wikipedia.org/wiki/Two-body_problem
 * https://en.wikipedia.org/wiki/Elliptic_orbit
 * https://en.wikipedia.org/wiki/Ellipse
 * https://en.wikipedia.org/wiki/Kepler%27s_laws_of_planetary_motion
