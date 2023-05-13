@@ -51,7 +51,7 @@ ___
 
 ___
 
-#### Helpful Articles about Programming:
+### Helpful Articles about Programming:
 * https://mikhail-szugalew.medium.com/simulating-gravity-in-unity-ae8258a80b6d
 * https://phys.libretexts.org/Bookshelves/Astronomy__Cosmology/Celestial_Mechanics_(Tatum)/09%3A_The_Two_Body_Problem_in_Two_Dimensions/9.08%3A_Orbital_Elements_and_Velocity_Vector#mjx-eqn-9.5.31
 * https://space.stackexchange.com/questions/1904/how-to-programmatically-calculate-orbital-elements-using-position-velocity-vecto
