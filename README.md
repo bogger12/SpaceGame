@@ -27,42 +27,20 @@ Vectors:
 
 
 ### Orbital Elements:
-
-Eccentricity:
-* https://en.wikipedia.org/wiki/Orbital_eccentricity
-* https://en.wikipedia.org/wiki/Eccentricity_vector
-
-Semi Major Axis:
-* https://en.wikipedia.org/wiki/Semi-major_and_semi-minor_axes
-
-Inclination:
-* https://en.wikipedia.org/wiki/Orbital_inclination
-
-Longtitude of the Ascending Node:
-* https://en.wikipedia.org/wiki/Longitude_of_the_ascending_node
-
-Argument of Periapsis:
-* https://en.wikipedia.org/wiki/Argument_of_periapsis
-
-True Anomaly (usually at epoch):
-* https://en.wikipedia.org/wiki/True_anomaly
+* _e_ [Eccentricity](https://en.wikipedia.org/wiki/Orbital_eccentricity) | **e** [Eccentricity Vector](https://en.wikipedia.org/wiki/Eccentricity_vector)
+* _a_ [Semi Major Axis](https://en.wikipedia.org/wiki/Semi-major_and_semi-minor_axes)
+* _i_ [Inclination](https://en.wikipedia.org/wiki/Orbital_inclination)
+* _Ω_ [Longtitude of the Ascending Node](https://en.wikipedia.org/wiki/Longitude_of_the_ascending_node)
+* _ω_ [Argument of Periapsis](https://en.wikipedia.org/wiki/Argument_of_periapsis)
+* _ν_ [True Anomaly](https://en.wikipedia.org/wiki/True_anomaly) (usually at epoch)
 
 
 #### Other Important Elements:
-Epoch:
-* https://en.wikipedia.org/wiki/Epoch_(astronomy)
-
-Period:
-* https://en.wikipedia.org/wiki/Orbital_period
-
-Mean Anomaly:
-* https://en.wikipedia.org/wiki/Mean_anomaly
-
-Eccentric Anomaly:
-* https://en.wikipedia.org/wiki/Eccentric_anomaly
-
-Specific Angular momentum:
-* https://en.wikipedia.org/wiki/Specific_angular_momentum
+* _t0_ [Epoch](https://en.wikipedia.org/wiki/Epoch_(astronomy))
+* _T_ [Orbital Period](https://en.wikipedia.org/wiki/Orbital_period)
+* _M_ [Mean Anomaly](https://en.wikipedia.org/wiki/Mean_anomaly)
+* _E_ [Eccentric Anomaly](https://en.wikipedia.org/wiki/Eccentric_anomaly)
+* _h_ [Specific Angular momentum](https://en.wikipedia.org/wiki/Specific_angular_momentum)
 
 
 
