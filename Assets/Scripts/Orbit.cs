@@ -46,7 +46,13 @@ public class Orbit {
     private float omega;
 
     // True Anomaly
-    private float f; 
+    private float f;
+
+    // == Extra variables ==
+
+    private Vector3 periapsis;
+    private Vector3 apoapsis;
+
 
 
     // Initialises the state variables in the orbit, assuming BoI is at (0,0), and calculates orbital elements
@@ -200,34 +206,13 @@ public class Orbit {
         // Calculate X, Y and Z values
         float P = a * (Mathf.Cos(E) - e);
         float Q = a * Mathf.Sin(E) * Mathf.Sqrt(1 - Mathf.Pow(e, 2));
-        // rotate by argument of periapsis
-        float x = Mathf.Cos(w) * P - Mathf.Sin(w) * Q;
-        float y = Mathf.Sin(w) * P + Mathf.Cos(w) * Q;
-        // rotate by inclination
-        float z = Mathf.Sin(i) * y;
-        y = Mathf.Cos(i) * y;
-        // rotate by longitude of ascending node
-        float xtemp = x;
-        x = Mathf.Cos(omega) * xtemp - Mathf.Sin(omega) * y;
-        y = Mathf.Sin(omega) * xtemp + Mathf.Cos(omega) * y;
 
         // Calculate vX, vY and vZ values
         float vP = -a * Mathf.Sin(E) * n / (1 - e * Mathf.Cos(E));
         float vQ = a * Mathf.Cos(E) * Mathf.Sqrt(1 - e * e) * n / (1 - e * Mathf.Cos(E));
-        // rotate by argument of periapsis
-        float vx = Mathf.Cos(w) * vP - Mathf.Sin(w) * vQ;
-        float vy = Mathf.Sin(w) * vP + Mathf.Cos(w) * vQ;
-        // rotate by inclination
-        float vz = Mathf.Sin(i) * vy;
-        vy = Mathf.Cos(i) * vy;
-        // rotate by longitude of ascending node
-        float vxtemp = vx;
-        vx = Mathf.Cos(omega) * vxtemp - Mathf.Sin(omega) * vy;
-        vy = Mathf.Sin(omega) * vxtemp + Mathf.Cos(omega) * vy;
 
-
-        Vector3 r_ = new Vector3(x, y, z);
-        Vector3 v_ = new Vector3(vx, vy, vz);
+        Vector3 r_ = RotateFromOrbitalPlaneTo3D(P, Q);
+        Vector3 v_ = RotateFromOrbitalPlaneTo3D(vP, vQ);
 
 
         if (setvariables) {
@@ -262,8 +247,33 @@ public class Orbit {
         return outtext;
     }
 
+    Vector3 RotateFromOrbitalPlaneTo3D(float P, float Q) {
+
+        // rotate by argument of periapsis
+        float x = Mathf.Cos(w) * P - Mathf.Sin(w) * Q;
+        float y = Mathf.Sin(w) * P + Mathf.Cos(w) * Q;
+        // rotate by inclination
+        float z = Mathf.Sin(i) * y;
+        y = Mathf.Cos(i) * y;
+        // rotate by longitude of ascending node
+        float xtemp = x;
+        x = Mathf.Cos(omega) * xtemp - Mathf.Sin(omega) * y;
+        y = Mathf.Sin(omega) * xtemp + Mathf.Cos(omega) * y;
+
+        return new Vector3(x, y, z);
+    }
+
     float CalculateMeanAnomalyFrom(float f) {
         float M = Mathf.Atan2(-Mathf.Sqrt(1 - e * e) * Mathf.Sin(f), -e - Mathf.Cos(f)) + Mathf.PI - e * ((Mathf.Sqrt(1 - e * e) * Mathf.Sin(f)) / (1 + e * Mathf.Cos(f)));
         return M;
+    }
+
+    public void CalculateExtraVariables() {
+        float periapsisdistance = (1 - e) * a;
+        float apoapsisdistance = (1 + e) * a;
+        periapsis = RotateFromOrbitalPlaneTo3D(periapsisdistance, 0);
+        apoapsis = RotateFromOrbitalPlaneTo3D(-apoapsisdistance, 0);
+        Debug.DrawLine(Vector3.zero, periapsis);
+        Debug.DrawLine(Vector3.zero, apoapsis);
     }
 }

@@ -12,6 +12,12 @@ public class RocketScript : MonoBehaviour {
 
     private float mass = 1f;
 
+    [Range(0f, 10f)]
+    public float rotateSpeed;
+
+    [Range(0, 200)]
+    public int orbitalLineNumberOfPoints;
+
 
 
     // Start is called before the first frame update
@@ -28,17 +34,18 @@ public class RocketScript : MonoBehaviour {
             rocketOrbit.AddForce(-GetDirection());
         }
 
-        if (Input.GetKey(KeyCode.Q)) Rotate(1f * Time.deltaTime);
-        if (Input.GetKey(KeyCode.E)) Rotate(-1f * Time.deltaTime);
+        if (Input.GetKey(KeyCode.Q)) Rotate(rotateSpeed * Time.deltaTime);
+        if (Input.GetKey(KeyCode.E)) Rotate(-rotateSpeed * Time.deltaTime);
 
         rocketOrbit.CalculatePositionVelocityatTime(Time.time);
         transform.position = rocketOrbit.position;
 
-        rocketOrbit.DrawOrbitalLine(lineRenderer, 50);
+        rocketOrbit.DrawOrbitalLine(lineRenderer, orbitalLineNumberOfPoints);
 
         UIController.SetText(rocketOrbit.ToString());
 
         Debug.DrawLine(transform.position, transform.position+GetDirection());
+        rocketOrbit.CalculateExtraVariables();
     }
 
 

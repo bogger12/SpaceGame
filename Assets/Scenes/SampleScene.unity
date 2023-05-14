@@ -372,6 +372,8 @@ MonoBehaviour:
   UIController: {fileID: 622174663}
   lineRenderer: {fileID: 928978670}
   bodyOfInfluence: {fileID: 1097531151}
+  rotateSpeed: 3
+  orbitalLineNumberOfPoints: 71
 --- !u!96 &928978669
 TrailRenderer:
   serializedVersion: 2
