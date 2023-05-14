@@ -18,7 +18,7 @@ public class RocketScript : MonoBehaviour {
     void Start() {
         rocketOrbit = new Orbit(transform.position, new Vector3(-1f, 15f), mass, 5.9722E12f);
     }
-
+    
     // Update is called once per frame
     private void Update() {
         if (Input.GetKey(KeyCode.W)) {

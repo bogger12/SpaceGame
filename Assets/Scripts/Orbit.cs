@@ -82,8 +82,20 @@ public class Orbit {
     // Draws the line of the orbit with the given number of vertices
     public void DrawOrbitalLine(LineRenderer lineRenderer, int numberOfPoints) {
         lineRenderer.positionCount = numberOfPoints;
+
+        //float n = (2 * Mathf.PI) / T; // Mean motion (rad)
+
+        //float shipE = Mathf.Acos((e + Mathf.Cos(f)) / (1 + e * Mathf.Cos(f)));
+        //if (f > Mathf.PI) shipE = 2 * Mathf.PI - shipE;
+
+        //float reverseETimeSincePeriapsis = shipE / n;
+
+
+        Vector3 position;
+
         for (int i = 0; i < numberOfPoints; i++) {
-            lineRenderer.SetPosition(i, CalculatePositionVelocityatTime(((T / (float)numberOfPoints) * (float)i + t0), false, true));
+            position = CalculatePositionVelocityatTime(((T / (float)numberOfPoints) * (float)i + t0), false, true);
+            lineRenderer.SetPosition(i, position);
         }
     }
 
@@ -147,7 +159,7 @@ public class Orbit {
         // Find M at this point. Then use that to find t0
         // M at t0 = 0. Thus the difference in t is M/n
 
-        float M = Mathf.Atan2(-Mathf.Sqrt(1 - e * e) * Mathf.Sin(f), -e - Mathf.Cos(f)) + Mathf.PI - e * ((Mathf.Sqrt(1 - e * e) * Mathf.Sin(f)) / (1 + e * Mathf.Cos(f)));
+        float M = CalculateMeanAnomalyFrom(f);
 
         float n = (2 * Mathf.PI) / T; // Mean motion (rad)
 
@@ -217,6 +229,16 @@ public class Orbit {
         Vector3 r_ = new Vector3(x, y, z);
         Vector3 v_ = new Vector3(vx, vy, vz);
 
+
+        if (setvariables) {
+            float fcompute = Vector3.Dot(e_, r_) / (e * r_.magnitude);
+            if (fcompute < -1f || fcompute > 1f) {
+                Debug.LogError(string.Format("True anomaly fcompute is fucked btw (< -1); fcompute = {0}", fcompute));
+            }
+            this.f = Mathf.Acos(fcompute);
+            if (Vector3.Dot(r_, v_) < 0) this.f = 2 * Mathf.PI - f;
+        }
+
         if (setvariables) {
             position = r_;
             velocity = v_;
@@ -226,7 +248,6 @@ public class Orbit {
 
     }
 
-    //string toString(Vector3 r_, Vector3 v_, Vector3 h, Vector3 nodevector, Vector3 e_, float a, float T, float i, float omega, float w, float f) {
     public override string ToString() {
         string outtext = "";
         outtext += string.Format("Position, Velocity: {0}, {1}\n", position, velocity);
@@ -239,5 +260,10 @@ public class Orbit {
         outtext += string.Format("True Anomaly (rad): {0}\n", f);
 
         return outtext;
+    }
+
+    float CalculateMeanAnomalyFrom(float f) {
+        float M = Mathf.Atan2(-Mathf.Sqrt(1 - e * e) * Mathf.Sin(f), -e - Mathf.Cos(f)) + Mathf.PI - e * ((Mathf.Sqrt(1 - e * e) * Mathf.Sin(f)) / (1 + e * Mathf.Cos(f)));
+        return M;
     }
 }
