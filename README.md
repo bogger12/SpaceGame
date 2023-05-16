@@ -1,6 +1,34 @@
 # SpaceGame
 A Space Game made with Unity.
 
+## To Do List
+- [ ] Add (simple) atmosphere sprite to planet
+- [ ] Add apsis markers
+- [ ] Add zoom in and out.
+- [ ] Add moon
+- [ ] Add ability to focus on different celestial objects
+- [ ] Add hyperbolic and parabolic trajectories
+- [ ] Add SOI of celestial objects such as moons, and get trajectory past them
+- [ ] Add manuever planners
+- [ ] Fix crash when orbit goes to 0 width
+- [ ] Add proper controls - z,x, others
+- [ ] Add UI for stuff like fuel, crew, thrust, position, orientation, stats
+- [ ] Make planets have dynamic lighting depending on where they are facing (shaders?)
+- [ ] Add sun and more planets in system
+
+### Future Ideas
+- [ ] Add higher res pngs (svgs maybe) for planets, so we can land on them etc
+- [ ] Improve rocket sprite
+- [ ] Add animations for rocket etc. (particles?)
+- [ ] Add crew and EVA capabilities
+
+### Potential Ideas
+- [ ] Add refueling capabilities on planets
+- [ ] Add more to do in eva, such as gathering materials, npcs
+- [ ] Add space wreckage
+- [ ] Add some story maybe? Motivation to go explore
+
+
 ## Resource List
 
 **[Astrophysics Equations](https://static1.squarespace.com/static/54b38552e4b055a31e5e3e47/t/5b5c071970a6addd33a8a85c/1532757806053/ultimate-astrophysics-cheat-sheet_1-0.pdf)**
