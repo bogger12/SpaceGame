@@ -18,7 +18,13 @@ public class RocketScript : MonoBehaviour {
     [Range(0, 200)]
     public int orbitalLineNumberOfPoints;
 
+    [Header("Sprites")]
+    [Space(10)]
+    public Sprite normalSprite;
+    public Sprite boostSprite;
 
+
+    private bool isThrust = false;
 
     // Start is called before the first frame update
     void Start() {
@@ -27,11 +33,10 @@ public class RocketScript : MonoBehaviour {
     
     // Update is called once per frame
     private void Update() {
+        isThrust = false;
         if (Input.GetKey(KeyCode.W)) {
             rocketOrbit.AddForce(GetDirection());
-        }
-        if (Input.GetKey(KeyCode.S)) {
-            rocketOrbit.AddForce(-GetDirection());
+            isThrust = true;
         }
 
         if (Input.GetKey(KeyCode.Q)) Rotate(rotateSpeed * Time.deltaTime);
@@ -44,8 +49,10 @@ public class RocketScript : MonoBehaviour {
 
         UIController.SetText(rocketOrbit.ToString());
 
-        Debug.DrawLine(transform.position, transform.position+GetDirection());
         rocketOrbit.CalculateExtraVariables();
+
+        if (isThrust) SetSprite(boostSprite);
+        else SetSprite(normalSprite);
     }
 
 
@@ -60,6 +67,10 @@ public class RocketScript : MonoBehaviour {
         float y = Mathf.Sin(dirangle);
 
         return new Vector3(x, y);
+    }
+
+    void SetSprite(Sprite newsprite) {
+        GetComponent<SpriteRenderer>().sprite = newsprite;
     }
 
 }

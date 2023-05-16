@@ -2,17 +2,12 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class GameSystem : MonoBehaviour
+public static class GameSystem
 {
-    // Start is called before the first frame update
-    void Start()
-    {
-        
+    public static int PPU = 16;
+    public static float pixelUnit {
+        get { return 1 / (float)PPU; }
     }
 
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
+
 }

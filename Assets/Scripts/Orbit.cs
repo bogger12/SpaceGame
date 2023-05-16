@@ -50,8 +50,11 @@ public class Orbit {
 
     // == Extra variables ==
 
-    private Vector3 periapsis;
-    private Vector3 apoapsis;
+    private Vector3 pe_;
+    private Vector3 ap_;
+    private float pe;
+    private float ap;
+
 
 
 
@@ -63,46 +66,6 @@ public class Orbit {
         this.sgp = bodyOfInfluenceMass * gravconst;
 
         CalculateOrbitalElementsFromPositionVelocity(position, velocity);
-    }
-
-
-    // Adds the acceleration of a given force and recalculates orbital elements - also adds step in position
-    public void AddForce(Vector3 force) {
-        Vector3 thrustacc = Time.deltaTime * force / mainBodyMass;
-
-
-        // F = (GMm)/r^2
-        // a = (GM)/r^2
-
-        // The Vector3.zero would usually be the body of influence pos
-        Vector3 difference = Vector3.zero - position; 
-        float r = difference.magnitude;
-        Vector3 gravacc = Time.deltaTime * (sgp / (r * r)) * difference.normalized;
-
-        velocity += gravacc;
-        velocity += thrustacc;
-        position += velocity * Time.deltaTime; // Adding acceleration of forces
-        CalculateOrbitalElementsFromPositionVelocity(position, velocity);
-    }
-
-    // Draws the line of the orbit with the given number of vertices
-    public void DrawOrbitalLine(LineRenderer lineRenderer, int numberOfPoints) {
-        lineRenderer.positionCount = numberOfPoints;
-
-        //float n = (2 * Mathf.PI) / T; // Mean motion (rad)
-
-        //float shipE = Mathf.Acos((e + Mathf.Cos(f)) / (1 + e * Mathf.Cos(f)));
-        //if (f > Mathf.PI) shipE = 2 * Mathf.PI - shipE;
-
-        //float reverseETimeSincePeriapsis = shipE / n;
-
-
-        Vector3 position;
-
-        for (int i = 0; i < numberOfPoints; i++) {
-            position = CalculatePositionVelocityatTime(((T / (float)numberOfPoints) * (float)i + t0), false, true);
-            lineRenderer.SetPosition(i, position);
-        }
     }
 
     // Calculates the Orbital Elements of the Orbit given a position and velocity
@@ -233,18 +196,41 @@ public class Orbit {
 
     }
 
-    public override string ToString() {
-        string outtext = "";
-        outtext += string.Format("Position, Velocity: {0}, {1}\n", position, velocity);
-        outtext += string.Format("eccentricity: {0}\n", e);
-        outtext += string.Format("Semi-Major Axis: {0}m\n", a);
-        outtext += string.Format("Period (s): {0}s\n", T);
-        outtext += string.Format("Inclination (rad): {0}\n", i);
-        outtext += string.Format("Longtitude of Ascending Node (rad): {0}\n", omega);
-        outtext += string.Format("Argument of Periapsis (rad): {0}\n", w);
-        outtext += string.Format("True Anomaly (rad): {0}\n", f);
 
-        return outtext;
+    // Adds the acceleration of a given force and recalculates orbital elements - also adds step in position
+    public void AddForce(Vector3 force) {
+        Vector3 thrustacc = Time.deltaTime * force / mainBodyMass;
+        // a = (GM)/r^2
+
+        // The Vector3.zero would usually be the body of influence pos
+        Vector3 difference = Vector3.zero - position;
+        float r = difference.magnitude;
+        Vector3 gravacc = Time.deltaTime * (sgp / (r * r)) * difference.normalized;
+
+        velocity += gravacc;
+        velocity += thrustacc;
+        position += velocity * Time.deltaTime; // Adding acceleration of forces
+        CalculateOrbitalElementsFromPositionVelocity(position, velocity);
+    }
+
+    // Draws the line of the orbit with the given number of vertices
+    public void DrawOrbitalLine(LineRenderer lineRenderer, int numberOfPoints) {
+        lineRenderer.positionCount = numberOfPoints;
+
+        //float n = (2 * Mathf.PI) / T; // Mean motion (rad)
+
+        //float shipE = Mathf.Acos((e + Mathf.Cos(f)) / (1 + e * Mathf.Cos(f)));
+        //if (f > Mathf.PI) shipE = 2 * Mathf.PI - shipE;
+
+        //float reverseETimeSincePeriapsis = shipE / n;
+
+
+        Vector3 position;
+
+        for (int i = 0; i < numberOfPoints; i++) {
+            position = CalculatePositionVelocityatTime(((T / (float)numberOfPoints) * (float)i + t0), false, true);
+            lineRenderer.SetPosition(i, position);
+        }
     }
 
     Vector3 RotateFromOrbitalPlaneTo3D(float P, float Q) {
@@ -269,11 +255,23 @@ public class Orbit {
     }
 
     public void CalculateExtraVariables() {
-        float periapsisdistance = (1 - e) * a;
-        float apoapsisdistance = (1 + e) * a;
-        periapsis = RotateFromOrbitalPlaneTo3D(periapsisdistance, 0);
-        apoapsis = RotateFromOrbitalPlaneTo3D(-apoapsisdistance, 0);
-        Debug.DrawLine(Vector3.zero, periapsis);
-        Debug.DrawLine(Vector3.zero, apoapsis);
+        pe = (1 - e) * a;
+        ap = (1 + e) * a;
+        pe_ = RotateFromOrbitalPlaneTo3D(pe, 0);
+        ap_ = RotateFromOrbitalPlaneTo3D(-ap, 0);
+    }
+
+    public override string ToString() {
+        string outtext = "";
+        outtext += string.Format("Position, Velocity: {0}, {1}\n", position, velocity);
+        outtext += string.Format("eccentricity: {0}\n", e);
+        outtext += string.Format("Semi-Major Axis: {0}m\n", a);
+        outtext += string.Format("Period (s): {0}s\n", T);
+        outtext += string.Format("Inclination (rad): {0}\n", i);
+        outtext += string.Format("Longtitude of Ascending Node (rad): {0}\n", omega);
+        outtext += string.Format("Argument of Periapsis (rad): {0}\n", w);
+        outtext += string.Format("True Anomaly (rad): {0}\n", f);
+
+        return outtext;
     }
 }
