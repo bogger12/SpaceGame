@@ -10,4 +10,7 @@ public static class GameSystem
     }
 
 
+    public static void Rotate(Transform transform, float angleRad) {
+        transform.Rotate(new Vector3(0, 0, Mathf.Rad2Deg * angleRad));
+    }
 }

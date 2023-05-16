@@ -23,12 +23,14 @@ public class RocketScript : MonoBehaviour {
     public Sprite normalSprite;
     public Sprite boostSprite;
 
+    public Vector3 startVector = new Vector3(-1f, 15f);
+
 
     private bool isThrust = false;
 
     // Start is called before the first frame update
     void Start() {
-        rocketOrbit = new Orbit(transform.position, new Vector3(-1f, 15f), mass, 5.9722E12f);
+        rocketOrbit = new Orbit(transform.position, startVector, mass, 5.9722E12f);
     }
     
     // Update is called once per frame
@@ -39,8 +41,8 @@ public class RocketScript : MonoBehaviour {
             isThrust = true;
         }
 
-        if (Input.GetKey(KeyCode.Q)) Rotate(rotateSpeed * Time.deltaTime);
-        if (Input.GetKey(KeyCode.E)) Rotate(-rotateSpeed * Time.deltaTime);
+        if (Input.GetKey(KeyCode.Q)) GameSystem.Rotate(transform, rotateSpeed * Time.deltaTime);
+        if (Input.GetKey(KeyCode.E)) GameSystem.Rotate(transform, -rotateSpeed * Time.deltaTime);
 
         rocketOrbit.CalculatePositionVelocityatTime(Time.time);
         transform.position = rocketOrbit.position;
@@ -53,11 +55,6 @@ public class RocketScript : MonoBehaviour {
 
         if (isThrust) SetSprite(boostSprite);
         else SetSprite(normalSprite);
-    }
-
-
-    void Rotate(float angleRad) {
-        transform.Rotate(new Vector3(0, 0, Mathf.Rad2Deg*angleRad));
     }
 
     Vector3 GetDirection() {
