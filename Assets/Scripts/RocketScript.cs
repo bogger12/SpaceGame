@@ -49,7 +49,7 @@ public class RocketScript : MonoBehaviour {
 
         rocketOrbit.DrawOrbitalLine(lineRenderer, orbitalLineNumberOfPoints);
 
-        UIController.SetText(rocketOrbit.ToString());
+        if (GameSystem.DEBUG) UIController.SetText(rocketOrbit.ToString());
 
         rocketOrbit.CalculateExtraVariables();
 

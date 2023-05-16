@@ -5,7 +5,7 @@ using UnityEngine.UIElements;
 
 public class Orbit {
 
-    public bool debug = false;
+    public bool debug = GameSystem.DEBUG;
 
     const float gravconst = 6.6725985E-11f; // fundamental universal constant
 
