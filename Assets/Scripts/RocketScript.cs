@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using static UnityEditor.PlayerSettings;
 
 public class RocketScript : MonoBehaviour {
 
@@ -44,17 +45,26 @@ public class RocketScript : MonoBehaviour {
         if (Input.GetKey(KeyCode.Q)) GameSystem.Rotate(transform, rotateSpeed * Time.deltaTime);
         if (Input.GetKey(KeyCode.E)) GameSystem.Rotate(transform, -rotateSpeed * Time.deltaTime);
 
-        rocketOrbit.CalculatePositionVelocityatTime(Time.time);
-        transform.position = rocketOrbit.position;
+        if (!rocketOrbit.landed) {
+            rocketOrbit.CalculatePositionVelocityatTime(Time.time);
+            transform.position = rocketOrbit.position;
 
-        rocketOrbit.DrawOrbitalLine(lineRenderer, orbitalLineNumberOfPoints);
+            rocketOrbit.DrawOrbitalLine(lineRenderer, orbitalLineNumberOfPoints);
+            rocketOrbit.CalculateExtraVariables();
 
-        if (GameSystem.DEBUG) UIController.SetText(rocketOrbit.ToString());
-
-        rocketOrbit.CalculateExtraVariables();
-
+            if (GameSystem.DEBUG) UIController.SetText(rocketOrbit.ToString());
+        }
+        
         if (isThrust) SetSprite(boostSprite);
         else SetSprite(normalSprite);
+    }
+
+
+    private Vector2 rotateVector(Vector2 v, float angle) {
+        float x = Mathf.Cos(angle) * v.x - Mathf.Sin(angle) * v.y;
+        float y = Mathf.Sin(angle) * v.x + Mathf.Cos(angle) * v.y;
+
+        return new Vector2(x, y);
     }
 
     Vector3 GetDirection() {

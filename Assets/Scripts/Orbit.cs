@@ -15,6 +15,8 @@ public class Orbit {
     private float mainBodyMass;
     private float bodyOfInfluenceMass;
 
+    public bool landed = false;
+
     // Standard gravitational parameter - Mu
     float sgp;
 
@@ -98,7 +100,8 @@ public class Orbit {
         this.i = Mathf.Acos(h.z / h.magnitude);
 
         // (temp) nodevector - Node Vector - points towards the ascending node
-        Vector3 nodevector = Vector3.Cross(Vector3.forward, h);
+        //Vector3 nodevector = Vector3.Cross(Vector3.forward, h);
+        Vector3 nodevector = Vector3.right; // Hack for 2D
 
         // omega = Longtitude of Ascending Node
         this.omega = Mathf.Acos(nodevector.x / nodevector.magnitude);
@@ -119,6 +122,8 @@ public class Orbit {
 
         float fcompute = Vector3.Dot(e_, r_) / (e * r_.magnitude);
         if (fcompute < -1f || fcompute > 1f) {
+            if (fcompute < -1f) fcompute = -1f;
+            if (fcompute > 1f) fcompute = 1f;
             Debug.LogError(string.Format("True anomaly fcompute is fucked btw (< -1); fcompute = {0}", fcompute));
         }
         this.f = Mathf.Acos(fcompute);
@@ -196,6 +201,13 @@ public class Orbit {
 
     }
 
+    public static Vector3 SimulateGravity(Vector3 pos, Vector3 BOIpos, float BOImass) {
+        float sgp = gravconst * BOImass;
+        Vector3 difference = BOIpos - pos;
+        float r = difference.magnitude;
+        Vector3 gravacc = Time.deltaTime * (sgp / (r * r)) * difference.normalized;
+        return gravacc;
+    }
 
     // Adds the acceleration of a given force and recalculates orbital elements - also adds step in position
     public void AddForce(Vector3 force) {
@@ -210,7 +222,7 @@ public class Orbit {
         velocity += gravacc;
         velocity += thrustacc;
         position += velocity * Time.deltaTime; // Adding acceleration of forces
-        CalculateOrbitalElementsFromPositionVelocity(position, velocity);
+        if (!landed) CalculateOrbitalElementsFromPositionVelocity(position, velocity);
     }
 
     // Draws the line of the orbit with the given number of vertices
