@@ -31,7 +31,7 @@ public class RocketScript : MonoBehaviour {
 
     // Start is called before the first frame update
     void Start() {
-        rocketOrbit = new Orbit(transform.position, startVector, mass, 5.9722E12f);
+        rocketOrbit = new Orbit(transform.position, startVector, bodyOfInfluence.transform, mass, 5.9722E12f);
     }
     
     // Update is called once per frame
@@ -47,7 +47,7 @@ public class RocketScript : MonoBehaviour {
 
         if (!rocketOrbit.landed) {
             rocketOrbit.CalculatePositionVelocityatTime(Time.time);
-            transform.position = rocketOrbit.position;
+            transform.position = rocketOrbit.getPosition();
 
             rocketOrbit.DrawOrbitalLine(lineRenderer, orbitalLineNumberOfPoints);
             rocketOrbit.CalculateExtraVariables();

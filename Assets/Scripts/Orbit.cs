@@ -10,8 +10,10 @@ public class Orbit {
     const float gravconst = 6.6725985E-11f; // fundamental universal constant
 
 
-    public Vector3 position;
-    public Vector3 velocity;
+    private Transform bodyOfInfluence;
+
+    private Vector3 position;
+    private Vector3 velocity;
     private float mainBodyMass;
     private float bodyOfInfluenceMass;
 
@@ -60,14 +62,23 @@ public class Orbit {
 
 
 
-    // Initialises the state variables in the orbit, assuming BoI is at (0,0), and calculates orbital elements
-    public Orbit(Vector3 position, Vector3 velocity, float mainBodyMass, float bodyOfInfluenceMass) {
+    // Initialises the state variables in the orbit, given BoI, and calculates orbital elements
+    public Orbit(Vector3 position, Vector3 velocity, Transform bodyOfInfluence, float mainBodyMass, float bodyOfInfluenceMass) {
         this.mainBodyMass = mainBodyMass;
         this.bodyOfInfluenceMass = bodyOfInfluenceMass;
+        this.bodyOfInfluence = bodyOfInfluence;
 
         this.sgp = bodyOfInfluenceMass * gravconst;
 
         CalculateOrbitalElementsFromPositionVelocity(position, velocity);
+    }
+
+    public Vector3 getPosition() {
+        return bodyOfInfluence.position + position;
+    }
+    public Vector3 getVelocity() {
+        //return bodyOfInfluence.velocity + velocity;
+        return velocity;
     }
 
     // Calculates the Orbital Elements of the Orbit given a position and velocity
@@ -275,7 +286,7 @@ public class Orbit {
 
     public override string ToString() {
         string outtext = "";
-        outtext += string.Format("Position, Velocity: {0}, {1}\n", position, velocity);
+        outtext += string.Format("Position, Velocity: {0}, {1}\n", getPosition(), getVelocity());
         outtext += string.Format("eccentricity: {0}\n", e);
         outtext += string.Format("Semi-Major Axis: {0}m\n", a);
         outtext += string.Format("Period (s): {0}s\n", T);
