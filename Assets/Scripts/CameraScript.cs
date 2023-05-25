@@ -8,48 +8,56 @@ public class CameraScript : MonoBehaviour
 {
 
     public Parallax parallaxObject;
-
-    public GameObject rocket;
-
     [Range(0,10)]
     public float moveSpeed;
+    [Range(0, 10)]
+    public float zoomSpeed;
 
+    public Transform centerOn = null;
 
-    private Vector3 roughPos;
+    public Vector3 roughPos;
+
+    private Camera camera;
+
+    public float scale = 1f;
 
     void Start()
     {
         roughPos = transform.position;
+        camera = GetComponent<Camera>();
     }
 
-    // Update is called once per frame
-    void Update()
+    // LateUpdate is used as we want to track the object after it has moved
+    void LateUpdate()
     {
-        if (Input.GetKey(KeyCode.I)) Move(Vector3.up * moveSpeed * Time.deltaTime);
-        if (Input.GetKey(KeyCode.K)) Move(Vector3.down * moveSpeed * Time.deltaTime);
-        if (Input.GetKey(KeyCode.J)) Move(Vector3.left * moveSpeed * Time.deltaTime);
-        if (Input.GetKey(KeyCode.L)) Move(Vector3.right * moveSpeed * Time.deltaTime);
 
-        //transform.position = VPixelSnap(roughPos);
-        SetPosition(VPixelSnap(rocket.transform.position));
+        if (centerOn != null) {
+            SetPosition(GameSystem.VPixelSnap(centerOn.position));
+        }
+        else {
+            transform.position = GameSystem.VPixelSnap(roughPos);
+        }
 
         parallaxObject.SetParallaxPoint(transform.position);
     }
 
-    void Move(Vector3 vmove) {
+    public void Move(Vector3 vmove) {
         roughPos += vmove;
     }
 
-    Vector3 VPixelSnap(Vector3 v) {
-        float pixelSnap(float a) { return GameSystem.pixelUnit * Mathf.Round(a / GameSystem.pixelUnit); }
-        return new Vector3(pixelSnap(v.x), pixelSnap(v.y), pixelSnap(v.z));
+    public void SetPosition(Vector2 v) {
+        float initZ = transform.position.z;
+        transform.position = new Vector3(v.x, v.y, initZ);
     }
 
-    void SetPosition(Vector2 v) {
-        float initZ = transform.position.z;
-        transform.position = v;
-        transform.position += new Vector3(0, 0, initZ);
-
+    public void Scale(float multiply) {
+        Vector3 multiplyOnlyXY(Vector3 v, float multiply) {
+            return (Vector3)((Vector2)v * multiply) + Vector3.forward;
+        }
+        camera.orthographicSize *= multiply;
+        transform.localScale = multiplyOnlyXY(transform.localScale, multiply);
+        scale *= multiply;
+        parallaxObject.objectScale = scale;
     }
 
 }
