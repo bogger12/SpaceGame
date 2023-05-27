@@ -47,7 +47,8 @@ public class RocketScript : MonoBehaviour {
 
         if (!rocketOrbit.landed) {
             rocketOrbit.CalculatePositionVelocityatTime(Time.time);
-            transform.position = rocketOrbit.getPosition();
+            //transform.position = rocketOrbit.getPosition();
+            transform.position = GameSystem.VPixelSnap(rocketOrbit.getPosition());
 
             rocketOrbit.DrawOrbitalLine(lineRenderer, orbitalLineNumberOfPoints);
             rocketOrbit.CalculateExtraVariables();

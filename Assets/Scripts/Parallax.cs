@@ -31,7 +31,8 @@ public class Parallax : MonoBehaviour
         for (int i = 0; i < parallaxObjects.Length; i++) {
             g = parallaxObjects[i];
             pvalue = parallaxValues[i];
-            g.transform.localPosition = pvalue * (parallaxPoint);
+            //g.transform.localPosition = pvalue * (parallaxPoint);
+            g.transform.localPosition = (parallaxPoint) - pvalue*(objectScale)*(parallaxPoint);
             g.transform.localScale = Vector2.one * objectScale;
             //Debug.Log(parallaxPoint * objectScale);
         }

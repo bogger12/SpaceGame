@@ -42,9 +42,25 @@ public class CelestialBodyEditor : Editor
 
         if (orbitFoldout) {
             GUI.enabled = body.hasOrbit;
-            body.initVelocity = EditorGUILayout.Vector3Field("Initial Velocity:", body.initVelocity);
-            EditorGUILayout.LabelField("Body of Influence:");
-            body.bodyOfInfluence = (GameObject)EditorGUILayout.ObjectField(body.bodyOfInfluence, typeof(GameObject), true);
+            body.customOrbit = EditorGUILayout.Toggle("Custom Orbit", body.customOrbit);
+            if (body.customOrbit) {
+                float initwidth = EditorGUIUtility.labelWidth;
+                EditorGUIUtility.labelWidth = 220;
+                body.e = EditorGUILayout.FloatField("Eccentricity", body.e);
+                body.a = EditorGUILayout.FloatField("Semi-Major Axis (m)", body.a);
+                body.w = EditorGUILayout.FloatField("Argument of Periapsis (rad)", body.w);
+                body.i = EditorGUILayout.FloatField("Inclination (rad)", body.i);
+                body.omega = EditorGUILayout.FloatField("Longtitude of Right-Ascending Node", body.omega);
+                body.f = EditorGUILayout.FloatField("True Anomaly", body.f);
+                EditorGUIUtility.labelWidth = initwidth;
+                EditorGUILayout.LabelField("Body of Influence:");
+                body.bodyOfInfluence = (GameObject)EditorGUILayout.ObjectField(body.bodyOfInfluence, typeof(GameObject), true);
+            }
+            else {
+                body.initVelocity = EditorGUILayout.Vector3Field("Initial Velocity:", body.initVelocity);
+                EditorGUILayout.LabelField("Body of Influence:");
+                body.bodyOfInfluence = (GameObject)EditorGUILayout.ObjectField(body.bodyOfInfluence, typeof(GameObject), true);
+            }
             GUI.enabled = true;
         }
 

@@ -23,8 +23,17 @@ public class CelestialBody : MonoBehaviour {
     private Orbit orbit;
     private LineRenderer lineRenderer;
 
+    public bool customOrbit;
 
-    void setupLineRenderer(ref LineRenderer lr) {
+    // If it has a custom orbit:
+    public float e;
+    public float a;
+    public float w;
+    public float i;
+    public float omega;
+    public float f;
+
+    void SetupLineRenderer(ref LineRenderer lr) {
         lr = gameObject.AddComponent<LineRenderer>() as LineRenderer;
         lr.loop = true;
         lr.startWidth = lineWidth;
@@ -32,14 +41,14 @@ public class CelestialBody : MonoBehaviour {
         lr.startColor = lineColor;
         lr.endColor = lineColor;
         lr.material = new Material(Shader.Find("Sprites/Default"));
-        lr.sortingLayerID = 1;
+        lr.sortingLayerID = SortingLayer.NameToID("Background");
     }
 
 
     // Start is called before the first frame update
     void Start()
     {
-        if (hasOrbit && bodyOfInfluence != null) {
+        if (hasOrbit && !customOrbit) {
             orbit = new Orbit(
                 transform.position,
                 initVelocity,
@@ -47,9 +56,10 @@ public class CelestialBody : MonoBehaviour {
                 mass,
                 bodyOfInfluence.GetComponent<CelestialBody>().mass
             );
-
-            if (hasOrbitalLine) setupLineRenderer(ref lineRenderer);
+        } else if (hasOrbit && customOrbit) {
+            orbit = new Orbit(e, a, w, i, omega, f, bodyOfInfluence.transform, mass, bodyOfInfluence.GetComponent<CelestialBody>().mass);
         }
+        if (hasOrbitalLine) SetupLineRenderer(ref lineRenderer);
     }
 
     // Update is called once per frame
@@ -57,7 +67,8 @@ public class CelestialBody : MonoBehaviour {
     {
         if (hasOrbit) {
             orbit.CalculatePositionVelocityatTime(Time.time);
-            transform.position = orbit.getPosition();
+            //transform.position = orbit.getPosition();
+            transform.position = GameSystem.VPixelSnap(orbit.getPosition());
 
             orbit.DrawOrbitalLine(lineRenderer, 50);
         }

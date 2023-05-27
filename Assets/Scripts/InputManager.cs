@@ -10,6 +10,12 @@ public class InputManager : MonoBehaviour
     public GameObject screenCamera;
     public GameObject cursor;
 
+    [Header("Input Values:")]
+    [Range(0, 10)]
+    public float moveSpeed;
+    [Range(0f, 1f)]
+    public float zoomSpeed;
+
     private Texture2D cursorTex;
 
     private RocketScript rocketScript;
@@ -31,42 +37,51 @@ public class InputManager : MonoBehaviour
         Cursor.visible = false;
     }
 
-    Vector3 vXY(Vector3 v, float z) {
-        Vector3 result = (Vector3)((Vector2)v);
-        return result + new Vector3(0, 0, z);
-    }
-
     // Update is called once per frame
     void Update()
     {
-        if (Input.GetKey(KeyCode.I)) cameraScript.Move(cameraScript.moveSpeed * Time.deltaTime * Vector3.up);
-        if (Input.GetKey(KeyCode.K)) cameraScript.Move(cameraScript.moveSpeed * Time.deltaTime * Vector3.down);
-        if (Input.GetKey(KeyCode.J)) cameraScript.Move(cameraScript.moveSpeed * Time.deltaTime * Vector3.left);
-        if (Input.GetKey(KeyCode.L)) cameraScript.Move(cameraScript.moveSpeed * Time.deltaTime * Vector3.right);
+        if (Input.GetKey(KeyCode.I)) cameraScript.Move(moveSpeed * Time.deltaTime * Vector3.up);
+        if (Input.GetKey(KeyCode.K)) cameraScript.Move(moveSpeed * Time.deltaTime * Vector3.down);
+        if (Input.GetKey(KeyCode.J)) cameraScript.Move(moveSpeed * Time.deltaTime * Vector3.left);
+        if (Input.GetKey(KeyCode.L)) cameraScript.Move(moveSpeed * Time.deltaTime * Vector3.right);
 
-        if (Input.GetKey(KeyCode.O)) cameraScript.Scale(1f - cameraScript.zoomSpeed * Time.deltaTime);
-        if (Input.GetKey(KeyCode.P)) cameraScript.Scale(1f + cameraScript.zoomSpeed * Time.deltaTime);
-
-        if (Input.GetMouseButtonDown(0)) {
+        if (Input.GetMouseButtonDown(1)) {
+            cameraScript.setCenterOn(null);
             initMouse = screenCameraComponent.ScreenToWorldPoint(Input.mousePosition);
             lastMouse = initMouse;
             initCameraPos = cameraScript.roughPos;
         }
-        else if (Input.GetMouseButton(0)) {
+        else if (Input.GetMouseButton(1)) {
             Vector2 worlddistance = screenCameraComponent.ScreenToWorldPoint(Input.mousePosition) - lastMouse;
             lastMouse = screenCameraComponent.ScreenToWorldPoint(Input.mousePosition);
             cameraScript.Move(-worlddistance * cameraScript.scale);
         }
-        else if (Input.GetMouseButtonUp(0)) {
+        else if (Input.GetMouseButtonUp(1)) {
             Vector2 worlddistance = screenCameraComponent.ScreenToWorldPoint(Input.mousePosition) - initMouse;
             cameraScript.roughPos = initCameraPos;
             cameraScript.Move(-worlddistance*cameraScript.scale);
         }
 
-        //cursor.transform.position = vXY((screenCameraComponent.ScreenToWorldPoint(Input.mousePosition) * cameraScript.scale + cameraScript.roughPos), cursor.transform.position.z);
-        //cursor.transform.position += (new Vector3(+cursorTex.width * GameSystem.pixelUnit / 2, -cursorTex.height * GameSystem.pixelUnit / 2));
+        // Use scrollwheel to change scale
+        cameraScript.Scale(1f + zoomSpeed * Input.mouseScrollDelta.y);
 
-        cursor.transform.localPosition = GameSystem.VSnap((vXY((screenCameraComponent.ScreenToWorldPoint(Input.mousePosition)), cursor.transform.localPosition.z)), GameSystem.pixelUnit);
+        // Set the cursor position to the relative mouse position
+        cursor.transform.localPosition = GameSystem.VSnap((GameSystem.V3SetZ((screenCameraComponent.ScreenToWorldPoint(Input.mousePosition)), cursor.transform.localPosition.z)), GameSystem.pixelUnit);
+        // No need to scale the pixels to snap to when changing scale, as it is a parent of the camera gameObject.
+
+        if (Input.GetMouseButtonDown(0)) {
+            Vector3 clickPos = screenCameraComponent.ScreenToWorldPoint(Input.mousePosition);
+            clickPos = GameSystem.V3SetZ((clickPos * cameraScript.scale + cameraScript.roughPos), 0.5f);
+
+            RaycastHit2D raycasthit = Physics2D.Raycast(clickPos, Vector3.forward);
+            if (raycasthit.collider!=null) { 
+                if (raycasthit.collider.CompareTag(GameSystem.celestialBodyTag)) {
+                    cameraScript.setCenterOn(raycasthit.transform);
+                    //Debug.Log(string.Format("hit {0}", raycasthit.transform.gameObject));
+                }
+            }
+        }
+
     }
 }
 

@@ -8,10 +8,6 @@ public class CameraScript : MonoBehaviour
 {
 
     public Parallax parallaxObject;
-    [Range(0,10)]
-    public float moveSpeed;
-    [Range(0, 10)]
-    public float zoomSpeed;
 
     public Transform centerOn = null;
 
@@ -30,24 +26,14 @@ public class CameraScript : MonoBehaviour
     // LateUpdate is used as we want to track the object after it has moved
     void LateUpdate()
     {
-
-        if (centerOn != null) {
-            SetPosition(GameSystem.VPixelSnap(centerOn.position));
-        }
-        else {
-            transform.position = GameSystem.VPixelSnap(roughPos);
-        }
+        if (centerOn != null) { roughPos = GameSystem.V3SetZ(centerOn.position, roughPos.z); }
+        transform.position = GameSystem.VPixelSnap(roughPos);
 
         parallaxObject.SetParallaxPoint(transform.position);
     }
 
     public void Move(Vector3 vmove) {
         roughPos += vmove;
-    }
-
-    public void SetPosition(Vector2 v) {
-        float initZ = transform.position.z;
-        transform.position = new Vector3(v.x, v.y, initZ);
     }
 
     public void Scale(float multiply) {
@@ -58,6 +44,13 @@ public class CameraScript : MonoBehaviour
         transform.localScale = multiplyOnlyXY(transform.localScale, multiply);
         scale *= multiply;
         parallaxObject.objectScale = scale;
+    }
+
+    public void setCenterOn(Transform newcenter) {
+        if (newcenter==null && centerOn != null) {
+            roughPos = GameSystem.V3SetZ(centerOn.position, roughPos.z);
+        }
+        centerOn = newcenter;
     }
 
 }

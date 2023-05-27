@@ -5,8 +5,6 @@ using UnityEngine.UIElements;
 
 public class Orbit {
 
-    public bool debug = GameSystem.DEBUG;
-
     const float gravconst = 6.6725985E-11f; // fundamental universal constant
 
 
@@ -20,7 +18,7 @@ public class Orbit {
     public bool landed = false;
 
     // Standard gravitational parameter - Mu
-    float sgp;
+    private float sgp;
 
 
     // == Orbital Elements of the Object's orbit == 
@@ -71,6 +69,35 @@ public class Orbit {
         this.sgp = bodyOfInfluenceMass * gravconst;
 
         CalculateOrbitalElementsFromPositionVelocity(position, velocity);
+    }
+
+    // Constructor that gives us the 6 Orbital Elements + BOI Information
+    public Orbit(float eccentricity, float semiMajorAxis, float argumentOfPeriapsis,
+        float inclination, float longtitudeOfAscendingNode, float trueAnomaly,
+        Transform bodyOfInfluence, float mainBodyMass, float bodyOfInfluenceMass
+    ) {
+        this.mainBodyMass = mainBodyMass;
+        this.bodyOfInfluenceMass = bodyOfInfluenceMass;
+        this.bodyOfInfluence = bodyOfInfluence;
+
+        this.sgp = bodyOfInfluenceMass * gravconst;
+
+        this.e = eccentricity;
+        this.a = semiMajorAxis;
+        this.w = argumentOfPeriapsis;
+        this.i = inclination;
+        this.omega = longtitudeOfAscendingNode;
+        this.f = trueAnomaly;
+
+        this.e_ = RotateFromOrbitalPlaneTo3D(e, 0f);
+
+        this.t0 = Time.time;
+
+        this.T = 2 * Mathf.PI * Mathf.Sqrt((a * a * a) / sgp);
+
+        CalculatePositionVelocityatTime(Time.time);
+
+        //CalculateOrbitalElementsFromPositionVelocity(position, velocity);
     }
 
     public Vector3 getPosition() {
@@ -131,14 +158,7 @@ public class Orbit {
             // Hack as there is no nodevector if h.z == 0
         }
 
-        float fcompute = Vector3.Dot(e_, r_) / (e * r_.magnitude);
-        if (fcompute < -1f || fcompute > 1f) {
-            if (fcompute < -1f) fcompute = -1f;
-            if (fcompute > 1f) fcompute = 1f;
-            Debug.LogError(string.Format("True anomaly fcompute is fucked btw (< -1); fcompute = {0}", fcompute));
-        }
-        this.f = Mathf.Acos(fcompute);
-        if (Vector3.Dot(r_, v_) < 0) this.f = 2 * Mathf.PI - f;
+        this.f = CalculateArgumentofPeriapsis(r_, v_);
 
 
         // Find M at this point. Then use that to find t0
@@ -150,7 +170,7 @@ public class Orbit {
 
         t0 = Time.time - (M / n); // Sets the epoch to the time of periapsis
 
-        if (debug) { 
+        if (GameSystem.LOG_ELEMENTS) { 
             Debug.Log(string.Format("Position, Velocity: {0}, {1}", r_, v_));
             Debug.Log(string.Format("nodevector: {0}", nodevector));
             Debug.Log(string.Format("eccentricity: {0}", e));
@@ -195,12 +215,7 @@ public class Orbit {
 
 
         if (setvariables) {
-            float fcompute = Vector3.Dot(e_, r_) / (e * r_.magnitude);
-            if (fcompute < -1f || fcompute > 1f) {
-                Debug.LogError(string.Format("True anomaly fcompute is fucked btw (< -1); fcompute = {0}", fcompute));
-            }
-            this.f = Mathf.Acos(fcompute);
-            if (Vector3.Dot(r_, v_) < 0) this.f = 2 * Mathf.PI - f;
+            this.f = CalculateArgumentofPeriapsis(r_, v_);
         }
 
         if (setvariables) {
@@ -251,7 +266,7 @@ public class Orbit {
         Vector3 position;
 
         for (int i = 0; i < numberOfPoints; i++) {
-            position = CalculatePositionVelocityatTime(((T / (float)numberOfPoints) * (float)i + t0), false, true);
+            position = bodyOfInfluence.position + CalculatePositionVelocityatTime(((T / (float)numberOfPoints) * (float)i + t0), false, true);
             lineRenderer.SetPosition(i, position);
         }
     }
@@ -277,6 +292,29 @@ public class Orbit {
         return M;
     }
 
+    float CalculateArgumentofPeriapsis(Vector3 r_, Vector3 v_) {
+        // We use argument of latitude if eccentricity is 0 (circular orbit)
+
+        if (e != 0f) {
+            float fcompute = Vector3.Dot(e_, r_) / (e * r_.magnitude);
+            if (fcompute < -1f || fcompute > 1f) {
+                Debug.LogError(string.Format("True anomaly fcompute is fucked btw (< -1); fcompute = {0}", fcompute));
+            }
+            float tempf = Mathf.Acos(fcompute);
+            if (Vector3.Dot(r_, v_) < 0) tempf = 2 * Mathf.PI - tempf;
+
+            return tempf;
+        } else { // Circular orbit
+            Vector3 nodevector = Vector3.right; // Hack for 2D
+
+            float u = Mathf.Acos((Vector3.Dot(nodevector, r_) / (nodevector.magnitude * r_.magnitude)));
+
+            return u;
+        }
+
+
+    }
+
     public void CalculateExtraVariables() {
         pe = (1 - e) * a;
         ap = (1 + e) * a;
@@ -288,6 +326,7 @@ public class Orbit {
         string outtext = "";
         outtext += string.Format("Position, Velocity: {0}, {1}\n", getPosition(), getVelocity());
         outtext += string.Format("eccentricity: {0}\n", e);
+        outtext += string.Format("eccentricity vector: {0}\n", e_);
         outtext += string.Format("Semi-Major Axis: {0}m\n", a);
         outtext += string.Format("Period (s): {0}s\n", T);
         outtext += string.Format("Inclination (rad): {0}\n", i);
