@@ -50,11 +50,17 @@ public class CelestialBodyEditor : Editor
                 body.a = EditorGUILayout.FloatField("Semi-Major Axis (m)", body.a);
                 body.w = EditorGUILayout.FloatField("Argument of Periapsis (rad)", body.w);
                 body.i = EditorGUILayout.FloatField("Inclination (rad)", body.i);
-                body.omega = EditorGUILayout.FloatField("Longtitude of Right-Ascending Node", body.omega);
-                body.f = EditorGUILayout.FloatField("True Anomaly", body.f);
+                body.omega = EditorGUILayout.FloatField("Longtitude of Right-Ascending Node (rad)", body.omega);
+                body.f = EditorGUILayout.FloatField("True Anomaly (rad)", body.f);
                 EditorGUIUtility.labelWidth = initwidth;
                 EditorGUILayout.LabelField("Body of Influence:");
                 body.bodyOfInfluence = (GameObject)EditorGUILayout.ObjectField(body.bodyOfInfluence, typeof(GameObject), true);
+                //save and load buttons
+                if (EditorApplication.isPlaying) { 
+                    if (GUILayout.Button("Apply")) {
+                        body.Start();
+                    }
+                }
             }
             else {
                 body.initVelocity = EditorGUILayout.Vector3Field("Initial Velocity:", body.initVelocity);

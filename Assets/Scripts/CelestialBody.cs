@@ -34,19 +34,29 @@ public class CelestialBody : MonoBehaviour {
     public float f;
 
     void SetupLineRenderer(ref LineRenderer lr) {
+        #if UNITY_EDITOR 
+        TryGetComponent<LineRenderer>(out LineRenderer lineren);
+        if (lineren!=null) {
+            lr = lineren;
+        } else lr = gameObject.AddComponent<LineRenderer>() as LineRenderer;
+        #else
         lr = gameObject.AddComponent<LineRenderer>() as LineRenderer;
+        #endif
         lr.loop = true;
-        lr.startWidth = lineWidth;
-        lr.endWidth = lineWidth;
+        SetLineWidth(lr, lineWidth);
         lr.startColor = lineColor;
         lr.endColor = lineColor;
         lr.material = new Material(Shader.Find("Sprites/Default"));
         lr.sortingLayerID = SortingLayer.NameToID("Background");
     }
 
+    void SetLineWidth(LineRenderer lr, float lineWidth) {
+        lr.startWidth = lineWidth;
+        lr.endWidth = lineWidth;
+    }
 
     // Start is called before the first frame update
-    void Start()
+    public void Start()
     {
         if (hasOrbit && !customOrbit) {
             orbit = new Orbit(
@@ -68,12 +78,14 @@ public class CelestialBody : MonoBehaviour {
         if (hasOrbit) {
             orbit.CalculatePositionVelocityatTime(Time.time);
             //transform.position = orbit.getPosition();
-            transform.position = GameSystem.VPixelSnap(orbit.getPosition());
+            //transform.position = GameSystem.VPixelSnap(orbit.GetPosition());
+            transform.position = orbit.GetPosition();
 
-            orbit.DrawOrbitalLine(lineRenderer, 50);
+            orbit.DrawOrbitalLine(lineRenderer, 50, true);
         }
 
         if (rotate) GameSystem.Rotate(transform, rotateSpeed * Time.deltaTime);
 
+        SetLineWidth(lineRenderer, GameSystem.pixelUnit * GameSystem.screenScale/2);
     }
 }

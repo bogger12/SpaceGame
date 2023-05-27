@@ -15,8 +15,6 @@ public class CameraScript : MonoBehaviour
 
     private Camera camera;
 
-    public float scale = 1f;
-
     void Start()
     {
         roughPos = transform.position;
@@ -27,7 +25,8 @@ public class CameraScript : MonoBehaviour
     void LateUpdate()
     {
         if (centerOn != null) { roughPos = GameSystem.V3SetZ(centerOn.position, roughPos.z); }
-        transform.position = GameSystem.VPixelSnap(roughPos);
+        //transform.position = GameSystem.VPixelSnap(roughPos);
+        transform.position = roughPos;
 
         parallaxObject.SetParallaxPoint(transform.position);
     }
@@ -42,8 +41,7 @@ public class CameraScript : MonoBehaviour
         }
         camera.orthographicSize *= multiply;
         transform.localScale = multiplyOnlyXY(transform.localScale, multiply);
-        scale *= multiply;
-        parallaxObject.objectScale = scale;
+        GameSystem.screenScale *= multiply;
     }
 
     public void setCenterOn(Transform newcenter) {

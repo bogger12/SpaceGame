@@ -54,24 +54,24 @@ public class InputManager : MonoBehaviour
         else if (Input.GetMouseButton(1)) {
             Vector2 worlddistance = screenCameraComponent.ScreenToWorldPoint(Input.mousePosition) - lastMouse;
             lastMouse = screenCameraComponent.ScreenToWorldPoint(Input.mousePosition);
-            cameraScript.Move(-worlddistance * cameraScript.scale);
+            cameraScript.Move(-worlddistance * GameSystem.screenScale);
         }
         else if (Input.GetMouseButtonUp(1)) {
             Vector2 worlddistance = screenCameraComponent.ScreenToWorldPoint(Input.mousePosition) - initMouse;
             cameraScript.roughPos = initCameraPos;
-            cameraScript.Move(-worlddistance*cameraScript.scale);
+            cameraScript.Move(-worlddistance * GameSystem.screenScale);
         }
 
         // Use scrollwheel to change scale
-        cameraScript.Scale(1f + zoomSpeed * Input.mouseScrollDelta.y);
+        cameraScript.Scale(1f - zoomSpeed * Input.mouseScrollDelta.y);
 
         // Set the cursor position to the relative mouse position
-        cursor.transform.localPosition = GameSystem.VSnap((GameSystem.V3SetZ((screenCameraComponent.ScreenToWorldPoint(Input.mousePosition)), cursor.transform.localPosition.z)), GameSystem.pixelUnit);
+        cursor.transform.localPosition = GameSystem.VPixelSnap((GameSystem.V3SetZ((screenCameraComponent.ScreenToWorldPoint(Input.mousePosition)), cursor.transform.localPosition.z)));
         // No need to scale the pixels to snap to when changing scale, as it is a parent of the camera gameObject.
 
         if (Input.GetMouseButtonDown(0)) {
             Vector3 clickPos = screenCameraComponent.ScreenToWorldPoint(Input.mousePosition);
-            clickPos = GameSystem.V3SetZ((clickPos * cameraScript.scale + cameraScript.roughPos), 0.5f);
+            clickPos = GameSystem.V3SetZ((clickPos * GameSystem.screenScale + cameraScript.roughPos), 0.5f);
 
             RaycastHit2D raycasthit = Physics2D.Raycast(clickPos, Vector3.forward);
             if (raycasthit.collider!=null) { 

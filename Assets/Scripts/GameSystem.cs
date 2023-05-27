@@ -10,7 +10,9 @@ public static class GameSystem
     public static int PPU = 16;
     public static float pixelUnit { get { return 1 / (float)PPU; } }
 
-    public static bool DEBUG = true;
+    public static float screenScale = 1f;
+
+    public static bool DEBUG = false;
     public static bool LOG_ELEMENTS = false;
 
     public static string celestialBodyTag = "Celestial Body";

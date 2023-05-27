@@ -47,7 +47,7 @@ public class Orbit {
     // Longtitude of Right Ascending Node (RAAN)
     private float omega;
 
-    // True Anomaly
+    // True Anomaly (rad)
     private float f;
 
     // == Extra variables ==
@@ -91,19 +91,27 @@ public class Orbit {
 
         this.e_ = RotateFromOrbitalPlaneTo3D(e, 0f);
 
-        this.t0 = Time.time;
 
         this.T = 2 * Mathf.PI * Mathf.Sqrt((a * a * a) / sgp);
+
+        float n = (2 * Mathf.PI) / T; // Mean motion (rad)
+
+        if (f != 0) this.t0 = Time.time - CalculateMeanAnomalyFrom(f) / n;
+        else this.t0 = 0;
+
 
         CalculatePositionVelocityatTime(Time.time);
 
         //CalculateOrbitalElementsFromPositionVelocity(position, velocity);
     }
 
-    public Vector3 getPosition() {
+    public Vector3 GetPosition() {
         return bodyOfInfluence.position + position;
     }
-    public Vector3 getVelocity() {
+    public Vector3 GetLocalPosition() {
+        return position;
+    }
+    public Vector3 GetVelocity() {
         //return bodyOfInfluence.velocity + velocity;
         return velocity;
     }
@@ -170,19 +178,9 @@ public class Orbit {
 
         t0 = Time.time - (M / n); // Sets the epoch to the time of periapsis
 
-        if (GameSystem.LOG_ELEMENTS) { 
-            Debug.Log(string.Format("Position, Velocity: {0}, {1}", r_, v_));
-            Debug.Log(string.Format("nodevector: {0}", nodevector));
-            Debug.Log(string.Format("eccentricity: {0}", e));
-            Debug.Log(string.Format("Semi-Major Axis: {0}m", a));
-            Debug.Log(string.Format("Period (s): {0}s", T));
-            Debug.Log(string.Format("Inclination (rad): {0}", i));
-            Debug.Log(string.Format("Longtitude of Ascending Node (rad): {0}", omega));
-            Debug.Log(string.Format("Argument of Periapsis: {0}", w));
-            Debug.Log(string.Format("True Anomaly: {0}", f));
+        if (GameSystem.LOG_ELEMENTS) {
+            Debug.Log(ToString());
         }
-
-        //SetDebugText(r_, v_, h, nodevector, e_, a, T, i, omega, w, f);
 
 
     }
@@ -252,7 +250,7 @@ public class Orbit {
     }
 
     // Draws the line of the orbit with the given number of vertices
-    public void DrawOrbitalLine(LineRenderer lineRenderer, int numberOfPoints) {
+    public void DrawOrbitalLine(LineRenderer lineRenderer, int numberOfPoints, bool pixelSnap) {
         lineRenderer.positionCount = numberOfPoints;
 
         //float n = (2 * Mathf.PI) / T; // Mean motion (rad)
@@ -267,6 +265,7 @@ public class Orbit {
 
         for (int i = 0; i < numberOfPoints; i++) {
             position = bodyOfInfluence.position + CalculatePositionVelocityatTime(((T / (float)numberOfPoints) * (float)i + t0), false, true);
+            if (pixelSnap) position = GameSystem.VPixelSnap(position);
             lineRenderer.SetPosition(i, position);
         }
     }
@@ -324,7 +323,7 @@ public class Orbit {
 
     public override string ToString() {
         string outtext = "";
-        outtext += string.Format("Position, Velocity: {0}, {1}\n", getPosition(), getVelocity());
+        outtext += string.Format("Position, Velocity: {0}, {1}\n", GetPosition(), GetVelocity());
         outtext += string.Format("eccentricity: {0}\n", e);
         outtext += string.Format("eccentricity vector: {0}\n", e_);
         outtext += string.Format("Semi-Major Axis: {0}m\n", a);

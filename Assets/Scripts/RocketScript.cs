@@ -24,18 +24,19 @@ public class RocketScript : MonoBehaviour {
     public Sprite normalSprite;
     public Sprite boostSprite;
 
-    public Vector3 startVector = new Vector3(-1f, 15f);
+    public Vector3 startPositionVector = new Vector3(6f, 0f);
+    public Vector3 startVelocityVector = new Vector3(-1f, 15f);
 
 
     private bool isThrust = false;
 
     // Start is called before the first frame update
     void Start() {
-        rocketOrbit = new Orbit(transform.position, startVector, bodyOfInfluence.transform, mass, 5.9722E12f);
+        rocketOrbit = new Orbit(startPositionVector, startVelocityVector, bodyOfInfluence.transform, mass, 5.9722E12f);
     }
     
     // Update is called once per frame
-    private void Update() {
+    private void LateUpdate() {
         isThrust = false;
         if (Input.GetKey(KeyCode.W)) {
             rocketOrbit.AddForce(GetDirection());
@@ -47,10 +48,10 @@ public class RocketScript : MonoBehaviour {
 
         if (!rocketOrbit.landed) {
             rocketOrbit.CalculatePositionVelocityatTime(Time.time);
-            //transform.position = rocketOrbit.getPosition();
-            transform.position = GameSystem.VPixelSnap(rocketOrbit.getPosition());
+            //transform.position = GameSystem.VPixelSnap(rocketOrbit.GetPosition());
+            transform.position = rocketOrbit.GetPosition();
 
-            rocketOrbit.DrawOrbitalLine(lineRenderer, orbitalLineNumberOfPoints);
+            rocketOrbit.DrawOrbitalLine(lineRenderer, orbitalLineNumberOfPoints, false);
             rocketOrbit.CalculateExtraVariables();
 
             if (GameSystem.DEBUG) UIController.SetText(rocketOrbit.ToString());
@@ -58,6 +59,7 @@ public class RocketScript : MonoBehaviour {
         
         if (isThrust) SetSprite(boostSprite);
         else SetSprite(normalSprite);
+
     }
 
 
