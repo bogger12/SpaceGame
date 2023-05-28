@@ -6,7 +6,7 @@ public class CelestialBody : MonoBehaviour {
 
     public float mass;
 
-    private float radius;
+    public float radius;
     public float Radius {
         get { return radius; }
         set {
@@ -17,14 +17,28 @@ public class CelestialBody : MonoBehaviour {
         }
     }
 
-    public bool rotate = true;
+    //public bool hasSOI;
+    public CircleCollider2D SphereOfInfluence;
+
+    public float radiusSOI;
+    public float RadiusSOI {
+        get {
+            return radiusSOI;
+        }
+        set {
+            if (SphereOfInfluence != null) SphereOfInfluence.radius = value;
+            radiusSOI = value;
+        }
+    }
+
+    public bool rotate;
     public bool hasOrbit;
     public bool hasOrbitalLine;
 
     public float rotateSpeed;
 
     public Vector3 initVelocity;
-    public GameObject bodyOfInfluence = null;
+    public GameObject bodyOfInfluence;
 
     public float lineWidth = 0.1f;
     public Color lineColor = Color.white;
@@ -43,14 +57,13 @@ public class CelestialBody : MonoBehaviour {
     public float f;
 
     void SetupLineRenderer(ref LineRenderer lr) {
-        #if UNITY_EDITOR 
-        TryGetComponent<LineRenderer>(out LineRenderer lineren);
-        if (lineren!=null) {
-            lr = lineren;
-        } else lr = gameObject.AddComponent<LineRenderer>() as LineRenderer;
-        #else
+#if UNITY_EDITOR 
+        if (lr == null) {
+            lr = gameObject.AddComponent<LineRenderer>() as LineRenderer;
+        }
+#else
         lr = gameObject.AddComponent<LineRenderer>() as LineRenderer;
-        #endif
+#endif
         lr.loop = true;
         SetLineWidth(lr, lineWidth);
         lr.startColor = lineColor;
@@ -62,6 +75,18 @@ public class CelestialBody : MonoBehaviour {
     void SetLineWidth(LineRenderer lr, float lineWidth) {
         lr.startWidth = lineWidth;
         lr.endWidth = lineWidth;
+    }
+
+    void SetupSOI(ref CircleCollider2D SOI) {
+#if UNITY_EDITOR
+        if (SOI == null) {
+            SOI = gameObject.AddComponent<CircleCollider2D>() as CircleCollider2D;
+        }
+#else
+        SOI = gameObject.AddComponent<CircleCollider2D>() as CircleCollider2D;
+#endif
+        SOI.radius = radiusSOI;
+
     }
 
     // Start is called before the first frame update
@@ -79,6 +104,8 @@ public class CelestialBody : MonoBehaviour {
             orbit = new Orbit(e, a, w, i, omega, f, bodyOfInfluence.transform, mass, bodyOfInfluence.GetComponent<CelestialBody>().mass);
         }
         if (hasOrbitalLine) SetupLineRenderer(ref lineRenderer);
+
+        SetupSOI(ref SphereOfInfluence);
     }
 
     // Update is called once per frame

@@ -23,6 +23,7 @@ public class CelestialBodyEditor : Editor
 
         body.mass = EditorGUILayout.FloatField("Mass:", body.mass);
         body.Radius = EditorGUILayout.Slider("Radius:", body.Radius, 0f, 50f);
+        body.RadiusSOI = EditorGUILayout.Slider("Sphere of Influcence Radius:", body.RadiusSOI, 0f, 50f);
 
         EditorGUILayout.BeginHorizontal();
         rotateFoldout = EditorGUILayout.Foldout(rotateFoldout, "Rotation", true);
