@@ -4,9 +4,9 @@ A Space Game made with Unity.
 ## To Do List
 - [ ] Add (simple) atmosphere sprite to planet
 - [ ] Add apsis markers
-- [ ] Add zoom in and out.
-- [ ] Add moon
-- [ ] Add ability to focus on different celestial objects
+- [x] Add zoom in and out.
+- [x] Add moon
+- [x] Add ability to focus on different celestial objects
 - [ ] Add hyperbolic and parabolic trajectories
 - [ ] Add SOI of celestial objects such as moons, and get trajectory past them
 - [ ] Add manuever planners
