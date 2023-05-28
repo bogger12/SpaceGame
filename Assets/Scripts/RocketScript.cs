@@ -36,7 +36,7 @@ public class RocketScript : MonoBehaviour {
     }
     
     // Update is called once per frame
-    private void LateUpdate() {
+    private void Update() {
         isThrust = false;
         if (Input.GetKey(KeyCode.W)) {
             rocketOrbit.AddForce(GetDirection());

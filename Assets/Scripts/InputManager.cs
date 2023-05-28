@@ -75,9 +75,8 @@ public class InputManager : MonoBehaviour
 
             RaycastHit2D raycasthit = Physics2D.Raycast(clickPos, Vector3.forward);
             if (raycasthit.collider!=null) { 
-                if (raycasthit.collider.CompareTag(GameSystem.celestialBodyTag)) {
+                if (raycasthit.collider.CompareTag(GameSystem.celestialBodyTag) || raycasthit.collider.CompareTag(GameSystem.rocketTag)) {
                     cameraScript.setCenterOn(raycasthit.transform);
-                    //Debug.Log(string.Format("hit {0}", raycasthit.transform.gameObject));
                 }
             }
         }

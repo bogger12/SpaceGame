@@ -30,7 +30,8 @@ public class Parallax : MonoBehaviour
             g = parallaxObjects[i];
             pvalue = parallaxValues[i];
             //g.transform.localPosition = pvalue * (parallaxPoint);
-            g.transform.localPosition = GameSystem.VPixelSnap((parallaxPoint) - pvalue*(GameSystem.screenScale) *(parallaxPoint));
+            //g.transform.localPosition = GameSystem.VPixelSnap((parallaxPoint) - pvalue*(GameSystem.screenScale) *(parallaxPoint));
+            g.transform.localPosition = (parallaxPoint) - pvalue*(GameSystem.screenScale) *(parallaxPoint);
             g.transform.localScale = Vector2.one * GameSystem.screenScale;
             //Debug.Log(parallaxPoint * objectScale);
         }

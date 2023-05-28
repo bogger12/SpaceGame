@@ -21,8 +21,8 @@ public class CameraScript : MonoBehaviour
         camera = GetComponent<Camera>();
     }
 
-    // LateUpdate is used as we want to track the object after it has moved
-    void LateUpdate()
+    // LateUpdate is used as we want to track the object after it has moved (changed order in Script Execution Order so no longer needed)
+    void Update()
     {
         if (centerOn != null) { roughPos = GameSystem.V3SetZ(centerOn.position, roughPos.z); }
         //transform.position = GameSystem.VPixelSnap(roughPos);

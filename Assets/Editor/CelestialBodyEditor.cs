@@ -22,6 +22,7 @@ public class CelestialBodyEditor : Editor
         CelestialBody body = target as CelestialBody;
 
         body.mass = EditorGUILayout.FloatField("Mass:", body.mass);
+        body.Radius = EditorGUILayout.Slider("Radius:", body.Radius, 0f, 50f);
 
         EditorGUILayout.BeginHorizontal();
         rotateFoldout = EditorGUILayout.Foldout(rotateFoldout, "Rotation", true);

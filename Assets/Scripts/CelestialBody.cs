@@ -6,7 +6,16 @@ public class CelestialBody : MonoBehaviour {
 
     public float mass;
 
-
+    private float radius;
+    public float Radius {
+        get { return radius; }
+        set {
+            GetComponent<SpriteRenderer>().size = new Vector2(value * 2, value * 2);
+            GetComponent<CircleCollider2D>().radius = value;
+            radius = value;
+            //Debug.Log(GetComponent<SpriteRenderer>().drawMode);
+        }
+    }
 
     public bool rotate = true;
     public bool hasOrbit;
