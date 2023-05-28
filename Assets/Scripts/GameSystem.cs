@@ -12,8 +12,8 @@ public static class GameSystem
 
     public static float screenScale = 1f;
 
-    public static bool DEBUG = false;
-    public static bool LOG_ELEMENTS = false;
+    public static bool DEBUG = true;
+    public static bool LOG_ELEMENTS = true;
 
     public static string celestialBodyTag = "Celestial Body";
     public static string rocketTag = "Rocket";

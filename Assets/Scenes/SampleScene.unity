@@ -1400,7 +1400,7 @@ MonoBehaviour:
   SphereOfInfluence: {fileID: 0}
   radiusSOI: 5
   rotate: 1
-  hasOrbit: 1
+  hasOrbit: 0
   hasOrbitalLine: 1
   rotateSpeed: 0.1
   initVelocity: {x: 0, y: 0.000001, z: 0}

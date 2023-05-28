@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using UnityEditor;
 using UnityEngine;
 
 public class CelestialBody : MonoBehaviour {
@@ -112,7 +113,10 @@ public class CelestialBody : MonoBehaviour {
     void Update()
     {
         if (hasOrbit) {
+            if (orbit.orbitType == Orbit.OrbitType.Parabolic) Debug.Log(orbit.ToString());
             orbit.CalculatePositionVelocityatTime(Time.time);
+            if (orbit.orbitType == Orbit.OrbitType.Parabolic) Debug.Log(orbit.ToString());
+            //Debug.Break();
             //transform.position = orbit.getPosition();
             //transform.position = GameSystem.VPixelSnap(orbit.GetPosition());
             transform.position = orbit.GetPosition();
