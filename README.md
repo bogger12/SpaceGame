@@ -1,6 +1,7 @@
 # SpaceGame
 A Space Game made with Unity.
 
+<img src="https://github.com/bogger12/SpaceGame/blob/3b6e416339a3325e6d3ccc5b1592ef55c65ba322/example.png" width="500" height="500*1.14"></img>
 ## To Do List
 - [ ] Add (simple) atmosphere sprite to planet
 - [ ] Add apsis markers
