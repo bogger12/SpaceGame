@@ -16,6 +16,7 @@ public static class GameSystem
     public static bool LOG_ELEMENTS = false;
 
     public static string celestialBodyTag = "Celestial Body";
+    public static string rocketTag = "Rocket";
 
 
     public static void Rotate(Transform transform, float angleRad) {
