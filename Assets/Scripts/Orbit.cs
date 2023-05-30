@@ -275,7 +275,7 @@ public class Orbit {
 
     // Draws the line of the orbit with the given number of vertices
     public void DrawOrbitalLine(LineRenderer lineRenderer, int numberOfPoints, bool pixelSnap) {
-        lineRenderer.positionCount = numberOfPoints;
+        
 
         //float n = (2 * Mathf.PI) / T; // Mean motion (rad)
 
@@ -287,7 +287,8 @@ public class Orbit {
 
         Vector3 position;
 
-        if (orbitType==OrbitType.Circular||orbitType==OrbitType.Elliptical) { 
+        if (orbitType==OrbitType.Circular||orbitType==OrbitType.Elliptical) {
+            lineRenderer.positionCount = numberOfPoints;
 
             for (int i = 0; i < numberOfPoints; i++) {
                 position = bodyOfInfluence.position + CalculatePositionVelocityatTime(((T / (float)numberOfPoints) * (float)i + t0), false, true);
@@ -296,15 +297,23 @@ public class Orbit {
             }
             lineRenderer.loop = true;
         }
-        else if (orbitType == OrbitType.Parabolic || orbitType == OrbitType.Hyperbolic) {
+        else if (orbitType == OrbitType.Parabolic) {
+
+        } else if (orbitType == OrbitType.Hyperbolic) {
             float timerange = 50; // seconds
-            for (int i = 0; i < numberOfPoints; i++) {
-                //float timeslice = (2 * timerange / (float)numberOfPoints) * (100f / (float)i);
-                float timeslice = (2 * timerange / (float)numberOfPoints) * (float)i - timerange;
-                //if (i == 0) timeslice = 0;
-                position = bodyOfInfluence.position + CalculatePositionVelocityatTime((timeslice + t0), false, true);
+            lineRenderer.positionCount = numberOfPoints-1;
+            for (int i = 1; i < numberOfPoints/2; i++) {
+                float timeslice = (timerange / (float)numberOfPoints) * (timerange / ((float)i)) - 2 * timerange * timerange / (numberOfPoints * numberOfPoints);
+                position = bodyOfInfluence.position + CalculatePositionVelocityatTime((t0+timeslice), false, true);
                 if (pixelSnap) position = GameSystem.VPixelSnap(position);
-                lineRenderer.SetPosition(i, position);
+                lineRenderer.SetPosition(i-1, position);
+            }
+            for (int i = 0; i <= numberOfPoints/2; i++) {
+                float timeslice = (timerange / (float)numberOfPoints) * (timerange / ((float)i)) - 2*timerange*timerange /(numberOfPoints*numberOfPoints);
+                if (i == 0) timeslice = 0;
+                position = bodyOfInfluence.position + CalculatePositionVelocityatTime((t0 - timeslice), false, true);
+                if (pixelSnap) position = GameSystem.VPixelSnap(position);
+                lineRenderer.SetPosition(numberOfPoints-i-1, position);
             }
             lineRenderer.loop = false;
         }

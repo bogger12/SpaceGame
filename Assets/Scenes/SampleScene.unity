@@ -815,7 +815,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!212 &818011818
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -906,10 +906,10 @@ MonoBehaviour:
   initVelocity: {x: 0, y: 4.4, z: 0}
   bodyOfInfluence: {fileID: 1097531151}
   lineWidth: 0.1
-  lineColor: {r: 0.9433962, g: 0, b: 0, a: 1}
+  lineColor: {r: 1, g: 1, b: 1, a: 0.3529412}
   customOrbit: 1
-  e: 1.2
-  a: -200
+  e: 0
+  a: 20
   w: 0
   i: 0
   omega: 0
@@ -1390,7 +1390,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1097531151}
-  m_Enabled: 0
+  m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: d118ff8ea7f4944ccbf09d9811478b9d, type: 3}
   m_Name: 

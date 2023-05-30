@@ -32,7 +32,8 @@ A Space Game made with Unity.
 
 ## Resource List
 
-**[Astrophysics Equations](https://static1.squarespace.com/static/54b38552e4b055a31e5e3e47/t/5b5c071970a6addd33a8a85c/1532757806053/ultimate-astrophysics-cheat-sheet_1-0.pdf)**
+**[Astrophysics Equations](https://static1.squarespace.com/static/54b38552e4b055a31e5e3e47/t/5b5c071970a6addd33a8a85c/1532757806053/ultimate-astrophysics-cheat-sheet_1-0.pdf)**\
+[Orbital Mechanics Reference](https://orbital-mechanics.space/intro.html)
 ___
 ### General
 
@@ -95,3 +96,6 @@ ___
 
 Orbital Elements Calculator:
 * http://orbitsimulator.com/formulas/OrbitalElements.html
+
+This Lecture I found which has lots of useful stuff:
+* https://control.asu.edu/Classes/MAE462/462Lecture05.pdf
