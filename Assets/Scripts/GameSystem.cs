@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using static TMPro.SpriteAssetUtilities.TexturePacker_JsonArray;
 
 public static class GameSystem
 {
@@ -35,5 +36,15 @@ public static class GameSystem
     public static Vector3 V3SetZ(Vector3 v, float z) {
         Vector3 result = (Vector3)((Vector2)v);
         return result + new Vector3(0, 0, z);
+    }
+
+
+    public static void TestAngle(Vector3 point, float initAngle, float angle) {
+        Debug.DrawLine(point, point+(Vector3)PolarToCartesian(5f, initAngle), Color.blue);
+        Debug.DrawLine(point, point+(Vector3)PolarToCartesian(5f, angle), Color.red);
+    }
+
+    public static Vector2 PolarToCartesian(float hyp, float theta) {
+        return new Vector2(hyp * Mathf.Cos(theta), hyp * Mathf.Sin(theta));
     }
 }

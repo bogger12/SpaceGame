@@ -44,7 +44,7 @@ public class CelestialBody : MonoBehaviour {
     public float lineWidth = 0.1f;
     public Color lineColor = Color.white;
 
-    private Orbit orbit;
+    private Orbit orbit = null;
     private LineRenderer lineRenderer;
 
     public bool customOrbit;

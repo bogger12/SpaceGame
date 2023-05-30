@@ -99,7 +99,7 @@ public class Orbit {
 
         // T = Orbital Period
         if (orbitType == OrbitType.Circular || orbitType == OrbitType.Elliptical) {
-            this.T = (2f * Mathf.PI) / n;
+            this.T = (2 * Mathf.PI) / n;
         }
         else this.T = float.PositiveInfinity;
 
@@ -161,9 +161,13 @@ public class Orbit {
         }
 
         // a = semi-major axis
-        this.a = 1f / (2f / r - (v * v) / sgp);
+        this.a = 1 / (2 / r - (v * v) / sgp);
 
+        if (orbitType == OrbitType.Hyperbolic) Debug.Log(string.Format("calc1 {0} f:{1}", Time.frameCount, f));
         this.f = CalculateTrueAnomaly(r_, v_, orbitType);
+        if (orbitType == OrbitType.Hyperbolic) Debug.Log(string.Format("calc1 {0} f:{1}", Time.frameCount, f));
+
+        //GameSystem.TestAngle(position, 0, f);
 
         // Find M at this point. Then use that to find t0
         // M at t0 = 0. Thus the difference in t is M/n
@@ -175,11 +179,17 @@ public class Orbit {
 
         // T = Orbital Period
         if (orbitType == OrbitType.Circular || orbitType == OrbitType.Elliptical) {
-            this.T = (2f * Mathf.PI) / n;
+            this.T = (2 * Mathf.PI) / n;
         }
         else this.T = float.PositiveInfinity;
 
         t0 = Time.time - (M / n); // Sets the epoch to the time of periapsis
+
+        if (orbitType == OrbitType.Hyperbolic) {
+            float testf = CalculateTrueAnomalyFromTime(Time.time, orbitType);
+            Debug.Log(string.Format("fcalcfrompos: {0} fcalcfromtime: {1}", f, testf));
+            //Debug.Break();
+        }
 
 
         if (GameSystem.LOG_ELEMENTS) {
@@ -209,39 +219,48 @@ public class Orbit {
             V.y = a * Mathf.Cos(E) * Mathf.Sqrt(1 - e * e) * n / (1 - e * Mathf.Cos(E));
         } else if (orbitType == OrbitType.Parabolic) {
 
-            f = CalculateTrueAnomalyFromTime(inputTime, orbitType);
+            float f = CalculateTrueAnomalyFromTime(inputTime, orbitType);
 
-            float h = Mathf.Sqrt(sgp * (a * (e * e - 1f)));
+            float h = Mathf.Sqrt(sgp * (a * (e * e - 1)));
 
-            float r = ((h * h) / sgp) * (1f / (1 + Mathf.Cos(f)));
+            float r = ((h * h) / sgp) * (1 / (1 + Mathf.Cos(f)));
 
-            float v = Mathf.Sqrt((2f * sgp) / r);
+            float v = Mathf.Sqrt((2 * sgp) / r);
 
-            P = PolarToCartesian(r, f);
-            //V = PolarToCartesian(v, phi + (Mathf.PI / 2f));
+            P = GameSystem.PolarToCartesian(r, f);
+            //V = PolarToCartesian(v, phi + (Mathf.PI / 2));
 
         } else if (orbitType == OrbitType.Hyperbolic) {
-            f = CalculateTrueAnomalyFromTime(inputTime, orbitType);
-
-            float l = a * (e * e - 1f);
-            float r = l / (1 + e * Mathf.Cos(f));
+            float f = CalculateTrueAnomalyFromTime(inputTime, orbitType);
+            if (setvariables)  Debug.Log(string.Format("TA: {0}", f));
+            float l = a * (e * e - 1);
+            float r = -(l / (1 + e * Mathf.Cos(f))); // idk why tf but it has to be negative
 
             // Flight path angle
-            float phi = Mathf.Atan((e * Mathf.Sin(f)) / (1f + e * Mathf.Cos(f)));
+            float phi = Mathf.Atan((e * Mathf.Sin(f)) / (1 + e * Mathf.Cos(f)));
 
-            float v = Mathf.Sqrt(sgp * ((2f / r) - (1f / a)));
+            float v = Mathf.Sqrt(sgp * ((2 / r) - (1 / a)));
 
-            P = PolarToCartesian(r, f);
-            V = PolarToCartesian(v, phi + (Mathf.PI / 2f));
+            float vangle = f + (Mathf.PI / 2) - phi;
+            //Debug.Log(string.Format("vangle: {0}", vangle));
 
-            Debug.Log(string.Format("P: {0} Q: {1}", P.x, P.y));
-            Debug.Log(string.Format("vP: {0} vQ: {1}", V.x, V.y));
+            //Debug.Log(string.Format("r:{0} f:{1}", r, f));
+
+
+            P = GameSystem.PolarToCartesian(r, f);
+            V = GameSystem.PolarToCartesian(v, vangle);
+
+            //Debug.Log(string.Format("P: {0} Q: {1}", P.x, P.y));
+            //Debug.Log(string.Format("vP: {0} vQ: {1}", V.x, V.y));
+            //Debug.Break();
         }
+        GameSystem.TestAngle(position+bodyOfInfluence.gameObject.transform.position, 0, f);
 
-        
+
 
         Vector3 r_ = RotateFromOrbitalPlaneTo3D(P.x, P.y);
         Vector3 v_ = RotateFromOrbitalPlaneTo3D(V.x, V.y);
+
 
 
         if (setvariables) {
@@ -249,16 +268,15 @@ public class Orbit {
         }
 
         if (setvariables) {
+            Debug.Log(string.Format("old pos: {0} new pos: {1}", position, r_));
+            Debug.Log(string.Format("old v: {0} new v: {1}", velocity, v_));
+
             position = r_;
             velocity = v_;
             return Vector3.zero;
         }
         else return r_;
 
-    }
-
-    public Vector2 PolarToCartesian(float hyp, float theta) {
-        return new Vector2(hyp * Mathf.Cos(theta), hyp * Mathf.Sin(theta));
     }
 
     public static Vector3 SimulateGravity(Vector3 pos, Vector3 BOIpos, float BOImass) {
@@ -309,7 +327,10 @@ public class Orbit {
         } else if (orbitType == OrbitType.Parabolic || orbitType == OrbitType.Hyperbolic) {
             float timerange = 50; // seconds
             for (int i = 0; i < numberOfPoints; i++) {
-                position = bodyOfInfluence.position + CalculatePositionVelocityatTime(((2f*timerange / (float)numberOfPoints) * (float)i + t0-timerange), false, true);
+                //float timeslice = (2 * timerange / (float)numberOfPoints) * (100f / (float)i);
+                float timeslice = (2 * timerange / (float)numberOfPoints) * (float)i - timerange;
+                //if (i == 0) timeslice = 0;
+                position = bodyOfInfluence.position + CalculatePositionVelocityatTime((timeslice + t0), false, true);
                 if (pixelSnap) position = GameSystem.VPixelSnap(position);
                 lineRenderer.SetPosition(i, position);
             }
@@ -363,7 +384,7 @@ public class Orbit {
             //float f = CalculateTrueAnomalyFromTime(currentTime, orbitType);
             return CalculateMeanAnomalyFrom(f);
         } else if (orbitType == OrbitType.Parabolic) {
-            float l = a * (e * e - 1f);
+            float l = a * (e * e - 1);
             float q = l / 2;
             float D = CalculateEccentricAnomaly(0, orbitType);
 
@@ -372,7 +393,9 @@ public class Orbit {
             Debug.Log(M);
             return M;
         } else if (orbitType==OrbitType.Hyperbolic) {
-            float F = CalculateEccentricAnomaly(0, orbitType);
+            //float F = CalculateEccentricAnomaly(0, orbitType);
+            float first = Mathf.Tan(f / 2) / Mathf.Sqrt(((e + 1) / (e - 1)));
+            float F = 2 * System.MathF.Atanh(first);
 
             float M = (e * System.MathF.Sinh(F)) - F;
             return M;
@@ -408,16 +431,25 @@ public class Orbit {
             return E;
         } else if (orbitType == OrbitType.Parabolic) {
             //float f = CalculateTrueAnomalyFromTime(currentTime, orbitType);
-            float l = a * (e * e - 1f);
+            float l = a * (e * e - 1);
             float D = Mathf.Sqrt(l)*Mathf.Tan(f / 2);
             return D;
 
         } else if (orbitType == OrbitType.Hyperbolic) {
 
             //float f = CalculateTrueAnomalyFromTime(currentTime, orbitType);
-            float first = Mathf.Tan(f / 2f) / Mathf.Sqrt(((e + 1) / (e - 1)));
-            Debug.Log(first);
-            float F = 2 * System.MathF.Atanh(first);
+            //float first = Mathf.Tan(f / 2) / Mathf.Sqrt(((e + 1) / (e - 1)));
+            //float F = 2 * System.MathF.Atanh(first);
+
+            float n = CalculateMeanMotion(orbitType);
+            float M = n * (timeSincePeriapsis); // Mean Anomaly (rad)
+
+            float F = M; // Eccentric Anomaly (rad) - E
+            for (int i = 0; i < 1000; i++) {
+                var dF = (e * System.MathF.Sinh(F) - F - M) / (e * System.MathF.Cosh(F)-1);
+                F -= dF;
+                if (Mathf.Abs(dF) < 1e-6) break;
+            }
             return F;
         }
 
@@ -435,41 +467,25 @@ public class Orbit {
             if (r_.z<0) u = 2 * Mathf.PI - u;
 
             return u;
-        }else if (orbitType == OrbitType.Elliptical) { // Eliptical Orbit
+        }else {
             float fcompute = Vector3.Dot(e_, r_) / (e * r_.magnitude);
-            if (fcompute < -1f || fcompute > 1f) {
+            if (fcompute < -1 || fcompute > 1) {
                 Debug.LogError(string.Format("True anomaly fcompute is fucked btw (< -1); fcompute = {0}", fcompute));
             }
             float tempf = Mathf.Acos(fcompute);
             if (Vector3.Dot(r_, v_) < 0) tempf = 2 * Mathf.PI - tempf;
 
-            return tempf;
-        } else if (orbitType == OrbitType.Parabolic) { // Parabolic Orbit
-
-            //// Use Barker's equation to calcluate true anomaly 
-
+            //float h = Mathf.Sqrt(sgp * (a * (e * e - 1)));
             Vector3 h_ = Vector3.Cross(r_, v_);
             float h = h_.magnitude;
 
-            float tempf = Mathf.Acos((h * h) / (sgp * r_.magnitude) - 1f);
-            //float tempf = Mathf.Acos(((a * (1 - e * e)) - r_.magnitude) / (r_.magnitude * e));
+            float q = Vector3.Dot(r_, v_);
+            float fy = (h * q) / (r_.magnitude * sgp);
+            float fx = (h * h) / (r_.magnitude * sgp) - 1;
+            float tempf2 = Mathf.Atan2(fy, fx);
 
-            //float tempf = Vector3.Angle(r_, Vector3.right);
-            //Debug.Log(tempf);
-
-            return tempf;
-
+            return tempf2;
         }
-        else if (orbitType == OrbitType.Hyperbolic) { // Hyperbolic Orbit
-
-            float tempf = Mathf.Acos(((a * (1 - e * e)) - r_.magnitude) / (r_.magnitude * e));
-
-            return tempf;
-
-
-        }
-
-        return 0;
 
     }
 
@@ -485,20 +501,20 @@ public class Orbit {
         else if (orbitType == OrbitType.Elliptical) { // Eliptical Orbit
             float E = CalculateEccentricAnomaly(currentTime, orbitType, false);
 
-            return CalculateTrueAnomalyFromE(E);
+            return CalculateTrueAnomalyFromE(E, orbitType);
         }
         else if (orbitType == OrbitType.Parabolic) { // Parabolic Orbit
 
             //// Use Barker's equation to calcluate true anomaly 
             //float rp = -a * (e - 1);
-            float h = Mathf.Sqrt(sgp * (a * (e * e - 1f)));
+            float h = Mathf.Sqrt(sgp * (a * (e * e - 1)));
             float rp = (h * h) / (2 * sgp);
 
-            float A = (3f / 2f) * Mathf.Sqrt((sgp) / (2f * rp * rp * rp)) * (currentTime - t0);
+            float A = (3f / 2) * Mathf.Sqrt((sgp) / (2 * rp * rp * rp)) * (currentTime - t0);
 
-            float B = Mathf.Pow((A + Mathf.Sqrt(A * A + 1)), (1f / 3f));
+            float B = Mathf.Pow((A + Mathf.Sqrt(A * A + 1)), (1 / 3f));
 
-            float tempf = 2f * Mathf.Atan(B - (1f / B));
+            float tempf = 2 * Mathf.Atan(B - (1 / B));
 
             Debug.Log(rp);
             Debug.Log(A);
@@ -511,14 +527,9 @@ public class Orbit {
         else if (orbitType == OrbitType.Hyperbolic) { // Hyperbolic Orbit
             //TODO
             // rp = Periapsis Distance
-            float rp = -a * (e - 1);
+            float F = CalculateEccentricAnomaly(currentTime, orbitType, false);
 
-            float M = Mathf.Sqrt(sgp / (2 * rp * rp * rp)) * (currentTime - t0);
-
-            float tempf = 2f * Mathf.Atan(System.MathF.Sinh(System.MathF.Asinh((3f * M) / 2f) / 3f));
-
-            return tempf;
-
+            return CalculateTrueAnomalyFromE(F, orbitType);
 
         }
 
@@ -526,12 +537,18 @@ public class Orbit {
 
     }
 
-    float CalculateTrueAnomalyFromE(float E) {
+    float CalculateTrueAnomalyFromE(float E, OrbitType orbitType) {
         // Only used for elliptical orbits
-        float B = e / (1f + Mathf.Sqrt(1f - e * e));
+        if (orbitType==OrbitType.Elliptical) {
+            float B = e / (1 + Mathf.Sqrt(1 - e * e));
 
-        float tempf = E + 2 * Mathf.Atan((B * Mathf.Sin(E)) / (1 - B * Mathf.Cos(E)));
-        return tempf;
+            float tempf = E + 2 * Mathf.Atan((B * Mathf.Sin(E)) / (1 - B * Mathf.Cos(E)));
+            return tempf;
+        } else if (orbitType == OrbitType.Hyperbolic) {
+            float tempf = 2*Mathf.Atan(Mathf.Sqrt((e + 1) / (e - 1)) * System.MathF.Tanh(E / 2));
+            return tempf;
+        }
+        return 0;
     }
 
     public void CalculateExtraVariables() {
@@ -551,10 +568,11 @@ public class Orbit {
 
     public override string ToString() {
         string outtext = "";
-        outtext += string.Format("Position, Velocity: {0}, {1}\n", GetPosition(), GetVelocity());
+        outtext += string.Format("Position, Velocity: {0}, {1}\n", GetLocalPosition(), GetVelocity());
         outtext += string.Format("Eccentricity: {0}\n", e);
         outtext += string.Format("Eccentricity vector: {0}\n", e_);
         outtext += string.Format("Orbit Type: {0}\n", orbitType.ToString());
+        outtext += string.Format("Epoch: {0}\n", t0);
         outtext += string.Format("Semi-Major Axis: {0}m\n", a);
         outtext += string.Format("Period (s): {0}s\n", T);
         outtext += string.Format("Inclination (rad): {0}\n", i);
