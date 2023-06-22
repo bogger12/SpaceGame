@@ -23,7 +23,7 @@ public class CelestialBodyEditor : Editor
 
         body.mass = EditorGUILayout.FloatField("Mass:", body.mass);
         body.Radius = EditorGUILayout.Slider("Radius:", body.Radius, 0f, 50f);
-        body.RadiusSOI = EditorGUILayout.Slider("Sphere of Influcence Radius:", body.RadiusSOI, 0f, 50f);
+        body.RadiusSOI = EditorGUILayout.Slider("Sphere of Influence Radius:", body.RadiusSOI, 0f, 500f);
 
         EditorGUILayout.BeginHorizontal();
         rotateFoldout = EditorGUILayout.Foldout(rotateFoldout, "Rotation", true);
@@ -56,7 +56,7 @@ public class CelestialBodyEditor : Editor
                 body.f = EditorGUILayout.FloatField("True Anomaly (rad)", body.f);
                 EditorGUIUtility.labelWidth = initwidth;
                 EditorGUILayout.LabelField("Body of Influence:");
-                body.bodyOfInfluence = (GameObject)EditorGUILayout.ObjectField(body.bodyOfInfluence, typeof(GameObject), true);
+                body.bodyOfInfluence = (CelestialBody)EditorGUILayout.ObjectField(body.bodyOfInfluence, typeof(CelestialBody), true);
                 //save and load buttons
                 if (EditorApplication.isPlaying) { 
                     if (GUILayout.Button("Apply")) {
@@ -67,7 +67,7 @@ public class CelestialBodyEditor : Editor
             else {
                 body.initVelocity = EditorGUILayout.Vector3Field("Initial Velocity:", body.initVelocity);
                 EditorGUILayout.LabelField("Body of Influence:");
-                body.bodyOfInfluence = (GameObject)EditorGUILayout.ObjectField(body.bodyOfInfluence, typeof(GameObject), true);
+                body.bodyOfInfluence = (CelestialBody)EditorGUILayout.ObjectField(body.bodyOfInfluence, typeof(CelestialBody), true);
             }
             GUI.enabled = true;
         }

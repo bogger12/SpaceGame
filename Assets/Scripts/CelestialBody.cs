@@ -19,7 +19,8 @@ public class CelestialBody : MonoBehaviour {
     }
 
     //public bool hasSOI;
-    public CircleCollider2D SphereOfInfluence;
+    public CircleCollider2D bodyCollider;
+    public CircleCollider2D sphereOfInfluence;
 
     public float radiusSOI;
     public float RadiusSOI {
@@ -27,7 +28,7 @@ public class CelestialBody : MonoBehaviour {
             return radiusSOI;
         }
         set {
-            if (SphereOfInfluence != null) SphereOfInfluence.radius = value;
+            if (sphereOfInfluence != null) sphereOfInfluence.radius = value;
             radiusSOI = value;
         }
     }
@@ -39,7 +40,7 @@ public class CelestialBody : MonoBehaviour {
     public float rotateSpeed;
 
     public Vector3 initVelocity;
-    public GameObject bodyOfInfluence;
+    public CelestialBody bodyOfInfluence;
 
     public float lineWidth = 0.1f;
     public Color lineColor = Color.white;
@@ -66,16 +67,11 @@ public class CelestialBody : MonoBehaviour {
         lr = gameObject.AddComponent<LineRenderer>() as LineRenderer;
 #endif
         lr.loop = true;
-        SetLineWidth(lr, lineWidth);
+        GameSystem.SetLineWidth(lr, lineWidth);
         lr.startColor = lineColor;
         lr.endColor = lineColor;
         lr.material = new Material(Shader.Find("Sprites/Default"));
         lr.sortingLayerID = SortingLayer.NameToID("Background");
-    }
-
-    void SetLineWidth(LineRenderer lr, float lineWidth) {
-        lr.startWidth = lineWidth;
-        lr.endWidth = lineWidth;
     }
 
     void SetupSOI(ref CircleCollider2D SOI) {
@@ -87,8 +83,11 @@ public class CelestialBody : MonoBehaviour {
         SOI = gameObject.AddComponent<CircleCollider2D>() as CircleCollider2D;
 #endif
         SOI.radius = radiusSOI;
+        SOI.isTrigger = true;
 
     }
+
+    public Orbit GetOrbit() { return orbit; }
 
     // Start is called before the first frame update
     public void Start()
@@ -97,35 +96,45 @@ public class CelestialBody : MonoBehaviour {
             orbit = new Orbit(
                 transform.position,
                 initVelocity,
-                bodyOfInfluence.transform,
-                mass,
-                bodyOfInfluence.GetComponent<CelestialBody>().mass
+                bodyOfInfluence,
+                mass
             );
         } else if (hasOrbit && customOrbit) {
-            orbit = new Orbit(e, a, w, i, omega, f, bodyOfInfluence.transform, mass, bodyOfInfluence.GetComponent<CelestialBody>().mass);
+            orbit = new Orbit(e, a, w, i, omega, f, bodyOfInfluence, mass);
         }
         if (hasOrbitalLine) SetupLineRenderer(ref lineRenderer);
 
-        SetupSOI(ref SphereOfInfluence);
+        bodyCollider = GetComponent<CircleCollider2D>();
+        if (GameSystem.DEBUG) SetupSOI(ref sphereOfInfluence);
     }
 
     // Update is called once per frame
     void Update()
     {
         if (hasOrbit) {
-            if (orbit.orbitType == Orbit.OrbitType.Parabolic) Debug.Log(orbit.ToString());
             orbit.CalculatePositionVelocityatTime(Time.time);
-            if (orbit.orbitType == Orbit.OrbitType.Parabolic) Debug.Log(orbit.ToString());
+            //if (orbit.orbitType == Orbit.OrbitType.Parabolic) 
             //Debug.Break();
             //transform.position = orbit.getPosition();
             //transform.position = GameSystem.VPixelSnap(orbit.GetPosition());
             transform.position = orbit.GetPosition();
+            //Debug.Log(orbit);
 
+            GameSystem.SetLineWidth(lineRenderer, GameSystem.pixelUnit * GameSystem.screenScale);
             orbit.DrawOrbitalLine(lineRenderer, 50, true);
         }
 
         if (rotate) GameSystem.Rotate(transform, rotateSpeed * Time.deltaTime);
 
-        SetLineWidth(lineRenderer, GameSystem.pixelUnit * GameSystem.screenScale/2);
+    }
+
+    public int GetHeirarchyLevel() {
+        if (bodyOfInfluence is null) return 0;
+        else return bodyOfInfluence.GetHeirarchyLevel() + 1;
+    }
+
+    public CelestialBody GetRootBody() {
+        if (bodyOfInfluence is null) return this;
+        else return bodyOfInfluence.GetRootBody();
     }
 }

@@ -7,7 +7,8 @@ public class RocketScript : MonoBehaviour {
 
     public UIController UIController;
     public LineRenderer lineRenderer;
-    public GameObject bodyOfInfluence;
+
+    public CelestialBody bodyOfInfluence;
 
     public Orbit rocketOrbit;
 
@@ -27,22 +28,24 @@ public class RocketScript : MonoBehaviour {
     public Vector3 startPositionVector = new Vector3(6f, 0f);
     public Vector3 startVelocityVector = new Vector3(-1f, 15f);
 
-
     private bool isThrust = false;
 
     // Start is called before the first frame update
     void Start() {
-        rocketOrbit = new Orbit(startPositionVector, startVelocityVector, bodyOfInfluence.transform, mass, 5.9722E12f);
+        rocketOrbit = new Orbit(startPositionVector, startVelocityVector, bodyOfInfluence, mass);
+        //rigidbody2D = GetComponent<Rigidbody2D>();
     }
     
     // Update is called once per frame
     private void Update() {
         isThrust = false;
         if (Input.GetKey(KeyCode.W)) {
-            rocketOrbit.AddForce(GetDirection());
+            rocketOrbit.AddForce(GameSystem.AngleToDirection(transform.rotation.eulerAngles.z));
             isThrust = true;
         }
 
+        //if (Input.GetKey(KeyCode.Q)) rigidbody2D.MoveRotation(rigidbody2D.rotation + Mathf.Rad2Deg * rotateSpeed * Time.deltaTime);
+        //if (Input.GetKey(KeyCode.E)) rigidbody2D.MoveRotation(rigidbody2D.rotation + Mathf.Rad2Deg * -rotateSpeed * Time.deltaTime);
         if (Input.GetKey(KeyCode.Q)) GameSystem.Rotate(transform, rotateSpeed * Time.deltaTime);
         if (Input.GetKey(KeyCode.E)) GameSystem.Rotate(transform, -rotateSpeed * Time.deltaTime);
 
@@ -50,11 +53,26 @@ public class RocketScript : MonoBehaviour {
             rocketOrbit.CalculatePositionVelocityatTime(Time.time);
             //transform.position = GameSystem.VPixelSnap(rocketOrbit.GetPosition());
             transform.position = rocketOrbit.GetPosition();
-
-            rocketOrbit.DrawOrbitalLine(lineRenderer, orbitalLineNumberOfPoints, false);
+            //rigidbody2D.MovePosition(rocketOrbit.GetPosition());
+            //Debug.Log("rocket at " + transform.position);
             rocketOrbit.CalculateExtraVariables();
 
+            // Draw orbital line
+            GameSystem.SetLineWidth(lineRenderer, GameSystem.pixelUnit * GameSystem.screenScale);
+            rocketOrbit.DrawOrbitalLine(lineRenderer, orbitalLineNumberOfPoints, false);
+
+            //Debug.Log(rocketOrbit);
             if (GameSystem.DEBUG) UIController.SetText(rocketOrbit.ToString());
+
+            CelestialBody currentBOI = CheckSOIInterceptionOfChildren(bodyOfInfluence.GetRootBody());
+            if (!currentBOI.Equals(bodyOfInfluence)) {
+                bodyOfInfluence = currentBOI;
+                rocketOrbit = rocketOrbit.NewOrbit(currentBOI);
+                Debug.Log("new BOI = " + currentBOI);
+            }
+        }
+        else {
+            transform.position = rocketOrbit.GetPosition();
         }
         
         if (isThrust) SetSprite(boostSprite);
@@ -62,25 +80,45 @@ public class RocketScript : MonoBehaviour {
 
     }
 
-
-    private Vector2 rotateVector(Vector2 v, float angle) {
-        float x = Mathf.Cos(angle) * v.x - Mathf.Sin(angle) * v.y;
-        float y = Mathf.Sin(angle) * v.x + Mathf.Cos(angle) * v.y;
-
-        return new Vector2(x, y);
-    }
-
-    Vector3 GetDirection() {
-        float dirangle = Mathf.Deg2Rad*(transform.rotation.eulerAngles.z+90);
-        //Debug.Log(dirangle);
-        float x = Mathf.Cos(dirangle);
-        float y = Mathf.Sin(dirangle);
-
-        return new Vector3(x, y);
-    }
-
     void SetSprite(Sprite newsprite) {
         GetComponent<SpriteRenderer>().sprite = newsprite;
     }
 
+    //private void OnTriggerEnter2D(Collider2D collision)
+    //{
+    //    //CircleCollider2D collider = collision.GetComponent<CircleCollider2D>();
+    //    Debug.Log(collision);
+    //    Debug.Log("CollisionEnter of " + collision.gameObject + " at " + transform.position + ", collisionobj at " + collision.gameObject.transform.position);
+    //    if (!collision.Equals(bodyOfInfluence.sphereOfInfluence)) {
+    //        CelestialBody colliderBodyOfInfluence = collision.gameObject.GetComponent<CelestialBody>();
+    //        Debug.Log("newCollisionEnter");
+    //        if (collision.Equals(colliderBodyOfInfluence.sphereOfInfluence)) {
+    //            bodyOfInfluence = colliderBodyOfInfluence;
+    //            Debug.Log("newBodyOfInfluence = " + colliderBodyOfInfluence);
+    //            rocketOrbit = rocketOrbit.NewOrbit(colliderBodyOfInfluence);
+    //        }
+    //    }
+    //}
+
+    private CelestialBody CheckSOIInterceptionOfChildren(CelestialBody rootBody) {
+        CelestialBody highest = rootBody;
+        int highestnum = 0;
+        foreach (Transform bodytransform in rootBody.transform) {
+            CelestialBody body = bodytransform.GetComponent<CelestialBody>();
+            int heirarchy = body.GetHeirarchyLevel();
+            if (body.GetHeirarchyLevel() > highestnum) {
+                float distance = (transform.position - bodytransform.position).magnitude;
+                if (distance <= body.radiusSOI) {
+                    if (!body.Equals(bodyOfInfluence)) Debug.Log("within radius of " + body);
+                    highest = body;
+                    highestnum = heirarchy;
+                    if (bodytransform.childCount > 0) {
+                        CelestialBody highestchild = CheckSOIInterceptionOfChildren(body);
+                        if (highestchild.GetHeirarchyLevel() > heirarchy) return highestchild;
+                    }
+                }
+            }
+        }
+        return highest;
+    }
 }

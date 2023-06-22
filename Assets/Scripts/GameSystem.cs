@@ -14,7 +14,7 @@ public static class GameSystem
     public static float screenScale = 1f;
 
     public static bool DEBUG = true;
-    public static bool LOG_ELEMENTS = true;
+    public static bool LOG_ELEMENTS = false;
 
     public static string celestialBodyTag = "Celestial Body";
     public static string rocketTag = "Rocket";
@@ -46,5 +46,21 @@ public static class GameSystem
 
     public static Vector2 PolarToCartesian(float hyp, float theta) {
         return new Vector2(hyp * Mathf.Cos(theta), hyp * Mathf.Sin(theta));
+    }
+
+    public static Vector2 RotateVector(Vector2 v, float angle) {
+        float x = Mathf.Cos(angle) * v.x - Mathf.Sin(angle) * v.y;
+        float y = Mathf.Sin(angle) * v.x + Mathf.Cos(angle) * v.y;
+        return new Vector2(x, y);
+    }
+
+    public static Vector3 AngleToDirection(float angle) {
+        float dirangle = Mathf.Deg2Rad * (angle + 90);
+        return new Vector3(Mathf.Cos(dirangle), Mathf.Sin(dirangle)).normalized;
+    }
+
+    public static void SetLineWidth(LineRenderer lr, float lineWidth) {
+        lr.startWidth = lineWidth;
+        lr.endWidth = lineWidth;
     }
 }
