@@ -17,21 +17,11 @@ public class CelestialBody : MonoBehaviour {
             //Debug.Log(GetComponent<SpriteRenderer>().drawMode);
         }
     }
+    public bool hasCustomSOI;
+    public float radiusSOI;
 
     //public bool hasSOI;
     public CircleCollider2D bodyCollider;
-    public CircleCollider2D sphereOfInfluence;
-
-    public float radiusSOI;
-    public float RadiusSOI {
-        get {
-            return radiusSOI;
-        }
-        set {
-            if (sphereOfInfluence != null) sphereOfInfluence.radius = value;
-            radiusSOI = value;
-        }
-    }
 
     public bool rotate;
     public bool hasOrbit;
@@ -58,6 +48,34 @@ public class CelestialBody : MonoBehaviour {
     public float omega;
     public float f;
 
+    // Start is called before the first frame update
+    public void Start()
+    {
+        if (hasOrbit) {
+            if (customOrbit) orbit = new Orbit(e, a, w, i, omega, f, bodyOfInfluence, mass);
+            else orbit = new Orbit(transform.position, initVelocity, bodyOfInfluence, mass);
+            radiusSOI = orbit.CalculateSphereOfInfluence();
+        }
+        if (hasOrbitalLine) SetupLineRenderer(ref lineRenderer);
+        bodyCollider = GetComponent<CircleCollider2D>();
+    }
+
+    // Update is called once per frame
+    void Update()
+    {
+        if (hasOrbit) {
+            orbit.CalculatePositionVelocityatTime(Time.time);
+            //transform.position = GameSystem.VPixelSnap(orbit.GetPosition());
+            transform.position = orbit.GetPosition();
+
+            GameSystem.SetLineWidth(lineRenderer, GameSystem.pixelUnit * GameSystem.screenScale);
+            orbit.DrawOrbitalLine(lineRenderer, 50, true);
+        }
+
+        if (rotate) GameSystem.Rotate(transform, rotateSpeed * Time.deltaTime);
+
+    }
+
     void SetupLineRenderer(ref LineRenderer lr) {
 #if UNITY_EDITOR 
         if (lr == null) {
@@ -74,59 +92,8 @@ public class CelestialBody : MonoBehaviour {
         lr.sortingLayerID = SortingLayer.NameToID("Background");
     }
 
-    void SetupSOI(ref CircleCollider2D SOI) {
-#if UNITY_EDITOR
-        if (SOI == null) {
-            SOI = gameObject.AddComponent<CircleCollider2D>() as CircleCollider2D;
-        }
-#else
-        SOI = gameObject.AddComponent<CircleCollider2D>() as CircleCollider2D;
-#endif
-        SOI.radius = radiusSOI;
-        SOI.isTrigger = true;
-
-    }
-
     public Orbit GetOrbit() { return orbit; }
-
-    // Start is called before the first frame update
-    public void Start()
-    {
-        if (hasOrbit && !customOrbit) {
-            orbit = new Orbit(
-                transform.position,
-                initVelocity,
-                bodyOfInfluence,
-                mass
-            );
-        } else if (hasOrbit && customOrbit) {
-            orbit = new Orbit(e, a, w, i, omega, f, bodyOfInfluence, mass);
-        }
-        if (hasOrbitalLine) SetupLineRenderer(ref lineRenderer);
-
-        bodyCollider = GetComponent<CircleCollider2D>();
-        if (GameSystem.DEBUG) SetupSOI(ref sphereOfInfluence);
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        if (hasOrbit) {
-            orbit.CalculatePositionVelocityatTime(Time.time);
-            //if (orbit.orbitType == Orbit.OrbitType.Parabolic) 
-            //Debug.Break();
-            //transform.position = orbit.getPosition();
-            //transform.position = GameSystem.VPixelSnap(orbit.GetPosition());
-            transform.position = orbit.GetPosition();
-            //Debug.Log(orbit);
-
-            GameSystem.SetLineWidth(lineRenderer, GameSystem.pixelUnit * GameSystem.screenScale);
-            orbit.DrawOrbitalLine(lineRenderer, 50, true);
-        }
-
-        if (rotate) GameSystem.Rotate(transform, rotateSpeed * Time.deltaTime);
-
-    }
+    public float GetSphereOfInfluence() { return radiusSOI; }
 
     public int GetHeirarchyLevel() {
         if (bodyOfInfluence is null) return 0;

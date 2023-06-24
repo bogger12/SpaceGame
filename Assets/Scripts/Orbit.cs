@@ -2,7 +2,6 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UIElements;
-using static UnityEditor.PlayerSettings;
 
 public class Orbit {
 
@@ -18,7 +17,7 @@ public class Orbit {
     private float mainBodyMass;
     private float bodyOfInfluenceMass;
 
-    public bool landed = false;
+    public bool inStaticOrbit = true;
 
     public OrbitType orbitType;
 
@@ -132,6 +131,11 @@ public class Orbit {
         );
         return newOrbit;
     }
+
+    public float CalculateSphereOfInfluence() { return 0.9431f * a * Mathf.Pow(mainBodyMass / bodyOfInfluence.mass, (2 / 5)); }
+    //public float GetSphereOfInfluenceOf(CelestialBody bodyOfInfluence) {
+    //    return 0.9431f * a * Mathf.Pow(mainBodyMass / bodyOfInfluence.mass, (2 / 5));
+    //}
 
     // Calculates the Orbital Elements of the Orbit given a position and velocity
     public void CalculateOrbitalElementsFromPositionVelocity(Vector3 r_, Vector3 v_) {
@@ -284,7 +288,7 @@ public class Orbit {
         velocity += gravacc;
         velocity += thrustacc;
         position += velocity * Time.deltaTime; // Adding acceleration of forces
-        if (!landed) CalculateOrbitalElementsFromPositionVelocity(position, velocity);
+        if (inStaticOrbit) CalculateOrbitalElementsFromPositionVelocity(position, velocity);
     }
 
     // Draws the line of the orbit with the given number of vertices
@@ -296,16 +300,15 @@ public class Orbit {
         Vector3[] positions;
         int numPositions = 0;
 
-        string teststring = "";
         bool checkIfPositionInsideSOI(Vector3 pos) {
             //float distance = (pos - bodyOfInfluence.transform.position).magnitude;
             float distance = pos.magnitude;
-            return distance <= bodyOfInfluence.radiusSOI;
+            return distance <= bodyOfInfluence.GetSphereOfInfluence();
         }
 
         Vector3 findInterceptofSOIAndLine(Vector2 pos1, Vector2 pos2) {
             //Debug.DrawLine((Vector2)bodyOfInfluence.transform.position+pos1, (Vector2)bodyOfInfluence.transform.position + pos2);
-            float r = bodyOfInfluence.radiusSOI;
+            float r = bodyOfInfluence.GetSphereOfInfluence();
             float dx = pos2.x - pos1.x;
             float dy = pos2.y - pos1.y;
             float dr = Mathf.Sqrt(dx * dx + dy * dy);
@@ -322,9 +325,8 @@ public class Orbit {
             float y1 = (-D * dx + Mathf.Abs(dy) * Mathf.Sqrt(discriminant)) / (dr * dr);
             float y2 = (-D * dx - Mathf.Abs(dy) * Mathf.Sqrt(discriminant)) / (dr * dr);
 
-            Debug.Log(string.Format("{0} {1} {2} {3}", x1, x2, y1, y2));
-            Debug.Log(pos1 + " " + pos2);
-            teststring = string.Format("{0} {1} {2} {3}", x1, x2, y1, y2);
+            //Debug.Log(string.Format("{0} {1} {2} {3}", x1, x2, y1, y2));
+            //Debug.Log(pos1 + " " + pos2);
             if ((x1 >= 0) == (pos1.x+(pos2.x - pos1.x) >= 0) && (y1 >= 0) == (pos1.y+(pos2.y - pos1.y) >= 0)) return new Vector3(x1, y1, 0f);
             else return new Vector3(x2, y2, 0f);
         }
@@ -500,9 +502,9 @@ public class Orbit {
             return u;
         }else {
             float fcompute = Vector3.Dot(e_, r_) / (e * r_.magnitude);
-            if (fcompute < -1 || fcompute > 1) {
-                Debug.LogError(string.Format("True anomaly fcompute is fucked btw (< -1); fcompute = {0}", fcompute));
-            }
+            //if (fcompute < -1 || fcompute > 1) {
+            //    Debug.LogError(string.Format("True anomaly fcompute is fucked btw (< -1); fcompute = {0}", fcompute));
+            //}
             float tempf = Mathf.Acos(fcompute);
             if (Vector3.Dot(r_, v_) < 0) tempf = 2 * Mathf.PI - tempf;
 

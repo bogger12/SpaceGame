@@ -8,14 +8,14 @@ A Space Game made with Unity.
 - [x] Add zoom in and out.
 - [x] Add moon
 - [x] Add ability to focus on different celestial objects
-- [ ] Add hyperbolic and parabolic trajectories
-- [ ] Add SOI of celestial objects such as moons, and get trajectory past them
+- [x] Add hyperbolic and parabolic trajectories
+- [x] Add SOI of celestial objects such as moons, and get trajectory past them
 - [ ] Add manuever planners
-- [ ] Fix crash when orbit goes to 0 width
+- [x] Fix crash when orbit goes to 0 width
 - [ ] Add proper controls - z,x, others
 - [ ] Add UI for stuff like fuel, crew, thrust, position, orientation, stats
 - [ ] Make planets have dynamic lighting depending on where they are facing (shaders?)
-- [ ] Add sun and more planets in system
+- [x] Add sun and more planets in system
 
 ### Future Ideas
 - [ ] Add higher res pngs (svgs maybe) for planets, so we can land on them etc
@@ -52,6 +52,9 @@ ___
 * https://en.wikipedia.org/wiki/Kepler%27s_laws_of_planetary_motion
 * https://en.wikipedia.org/wiki/Orbital_elements
 * https://en.wikipedia.org/wiki/Oberth_effect
+* https://en.wikipedia.org/wiki/Sphere_of_influence_(astrodynamics)
+* https://en.wikipedia.org/wiki/Hill_sphere
+* https://en.wikipedia.org/wiki/Roche_limit
 </details>
 
 <details open>
