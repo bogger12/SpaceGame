@@ -6,6 +6,7 @@ TagManager:
   tags:
   - Celestial Body
   - Rocket
+  - Root Body
   layers:
   - Default
   - TransparentFX

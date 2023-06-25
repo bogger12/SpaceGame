@@ -5,7 +5,7 @@ using UnityEngine;
 public class RocketScript : MonoBehaviour {
 
     public UIController UIController;
-    public LineRenderer lineRenderer;
+    private LineRenderer lineRenderer;
 
     public CelestialBody bodyOfInfluence;
 
@@ -32,10 +32,11 @@ public class RocketScript : MonoBehaviour {
     // Start is called before the first frame update
     void Start() {
         rocketOrbit = new Orbit(startPositionVector, startVelocityVector, bodyOfInfluence, mass);
+        lineRenderer = GetComponent<LineRenderer>();
     }
     
     // Update is called once per frame
-    private void Update() {
+    public void OrbitalUpdate() {
 
         GameSystem.timeElapsed += GameSystem.DeltaTime();
 
@@ -66,6 +67,7 @@ public class RocketScript : MonoBehaviour {
                 bodyOfInfluence = currentBOI;
                 rocketOrbit = rocketOrbit.NewOrbit(currentBOI);
                 Debug.Log("new BOI = " + currentBOI);
+                GameSystem.timeScale = 1f;
             }
         }
         else {

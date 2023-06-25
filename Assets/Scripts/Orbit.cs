@@ -132,13 +132,6 @@ public class Orbit {
         return newOrbit;
     }
 
-    public float CalculateSphereOfInfluence() {
-        return 0.9431f * a * Mathf.Pow(mainBodyMass / bodyOfInfluence.mass, (2f / 5f));
-    }
-    //public float GetSphereOfInfluenceOf(CelestialBody bodyOfInfluence) {
-    //    return 0.9431f * a * Mathf.Pow(mainBodyMass / bodyOfInfluence.mass, (2 / 5));
-    //}
-
     // Calculates the Orbital Elements of the Orbit given a position and velocity
     public void CalculateOrbitalElementsFromPositionVelocity(Vector3 r_, Vector3 v_) {
 

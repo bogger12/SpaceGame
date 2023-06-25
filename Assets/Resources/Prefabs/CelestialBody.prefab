@@ -14,7 +14,7 @@ GameObject:
   - component: {fileID: 6572818384630435686}
   m_Layer: 0
   m_Name: CelestialBody
-  m_TagString: Celestial Body
+  m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -114,20 +114,21 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d118ff8ea7f4944ccbf09d9811478b9d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  mass: 100
-  radius: 1
-  hasCustomSOI: 0
-  radiusSOI: 0
   bodyCollider: {fileID: 0}
-  rotate: 1
-  hasOrbit: 1
-  hasOrbitalLine: 1
-  rotateSpeed: 0.1
   initVelocity: {x: 0, y: 4.4, z: 0}
   bodyOfInfluence: {fileID: 0}
   lineWidth: 0.1
   lineColor: {r: 1, g: 1, b: 1, a: 0.11764706}
+  rotate: 1
+  hasOrbit: 1
   customOrbit: 1
+  hasOrbitalLine: 1
+  hasCustomSOI: 0
+  radiusSOI: 0
+  mass: 100
+  radius: 1
+  density: 0
+  rotatePeriod: 0
   e: 0
   a: 0
   w: 0

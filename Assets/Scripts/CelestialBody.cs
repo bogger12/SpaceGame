@@ -46,13 +46,14 @@ public class CelestialBody : MonoBehaviour {
     public float omega;
     public float f;
 
+
     // Start is called before the first frame update
     public void Start()
     {
         if (hasOrbit) {
             if (customOrbit) orbit = new Orbit(e, a, w, i, omega, f, bodyOfInfluence, mass);
             else orbit = new Orbit(transform.position, initVelocity, bodyOfInfluence, mass);
-            radiusSOI = orbit.CalculateSphereOfInfluence();
+            if (!hasCustomSOI) radiusSOI = CalculateSphereOfInfluence();
         }
         if (hasOrbitalLine) SetupLineRenderer(ref lineRenderer);
         bodyCollider = GetComponent<CircleCollider2D>();
@@ -61,7 +62,7 @@ public class CelestialBody : MonoBehaviour {
     }
 
     // Update is called once per frame
-    void Update()
+    public void OrbitalUpdate()
     {
         if (hasOrbit) {
             orbit.CalculatePositionVelocityatTime(GameSystem.CurrentTime());
@@ -70,7 +71,7 @@ public class CelestialBody : MonoBehaviour {
 
             GameSystem.SetLineWidth(lineRenderer, GameSystem.pixelUnit * GameSystem.screenScale);
             orbit.DrawOrbitalLine(lineRenderer, 50, true);
-            if (GameSystem.DEBUG) Debug.DrawCircle(transform.position, radiusSOI, 20, Color.red);
+            if (GameSystem.DEBUG) Debug.DrawCircle(transform.position, radiusSOI, 20, Color.red, 0);
         }
 
         if (rotate) GameSystem.Rotate(transform, 2f*Mathf.PI*(GameSystem.DeltaTime()/rotatePeriod) );
@@ -95,6 +96,10 @@ public class CelestialBody : MonoBehaviour {
 
     public Orbit GetOrbit() { return orbit; }
     public float GetSphereOfInfluence() { return radiusSOI; }
+    public float CalculateSphereOfInfluence() {
+        if (hasCustomSOI) return radiusSOI;
+        else return 0.9431f * a * Mathf.Pow(mass / bodyOfInfluence.mass, (2f / 5f));
+    }
 
     public int GetHeirarchyLevel() {
         if (bodyOfInfluence is null) return 0;

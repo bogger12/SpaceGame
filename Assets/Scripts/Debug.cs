@@ -3,7 +3,7 @@ using System.Collections;
 
 public class Debug : UnityEngine.Debug
 {
-    public static void DrawCircle(Vector3 position, float radius, int segments, Color color) {
+    public static void DrawCircle(Vector3 position, float radius, int segments, Color color, float duration) {
         // If either radius or number of segments are less or equal to 0, skip drawing
         if (radius <= 0.0f || segments <= 0) {
             return;
@@ -39,7 +39,7 @@ public class Debug : UnityEngine.Debug
             lineEnd += position;
 
             // Points are connected using DrawLine method and using the passed color
-            DrawLine(lineStart, lineEnd, color);
+            DrawLine(lineStart, lineEnd, color, duration);
         }
     }
 }
