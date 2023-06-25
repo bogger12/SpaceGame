@@ -45,6 +45,15 @@ public class InputManager : MonoBehaviour
         if (Input.GetKey(KeyCode.J)) cameraScript.Move(moveSpeed * Time.deltaTime * Vector3.left);
         if (Input.GetKey(KeyCode.L)) cameraScript.Move(moveSpeed * Time.deltaTime * Vector3.right);
 
+        if (Input.GetKeyDown(KeyCode.Comma)) {
+            GameSystem.timeScale /= 10f;
+            Debug.Log(GameSystem.timeScale);
+        }
+        if (Input.GetKeyDown(KeyCode.Period)) {
+            GameSystem.timeScale *= 10f;
+            Debug.Log(GameSystem.timeScale);
+        }
+
         if (Input.GetMouseButtonDown(1)) {
             cameraScript.setCenterOn(null);
             initMouse = screenCameraComponent.ScreenToWorldPoint(Input.mousePosition);

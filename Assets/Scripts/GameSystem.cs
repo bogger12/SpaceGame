@@ -8,6 +8,9 @@ public static class GameSystem
     public static int screenWidth = 512;
     public static int screenHeight = 448;
 
+    public static float timeElapsed = 0f;
+    public static float timeScale = 1f;
+
     public static int PPU = 16;
     public static float pixelUnit { get { return 1 / (float)PPU; } }
 
@@ -19,6 +22,9 @@ public static class GameSystem
     public static string celestialBodyTag = "Celestial Body";
     public static string rocketTag = "Rocket";
 
+
+    public static float CurrentTime() { return timeElapsed; }
+    public static float DeltaTime() { return Time.deltaTime * timeScale; }
 
     public static void Rotate(Transform transform, float angleRad) {
         transform.Rotate(new Vector3(0, 0, Mathf.Rad2Deg * angleRad));
@@ -37,7 +43,6 @@ public static class GameSystem
         Vector3 result = (Vector3)((Vector2)v);
         return result + new Vector3(0, 0, z);
     }
-
 
     public static void TestAngle(Vector3 point, float initAngle, float angle) {
         Debug.DrawLine(point, point+(Vector3)PolarToCartesian(5f, initAngle), Color.blue);

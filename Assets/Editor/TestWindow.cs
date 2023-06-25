@@ -19,10 +19,8 @@ public class TestWindow : EditorWindow
         VisualElement root = rootVisualElement;
 
         // VisualElements objects can contain other VisualElement following a tree hierarchy.
-        VisualElement label = new Label("Hello World! From C#");
-        root.Add(label);
 
-        root.Add(new Label("Input values for orbit testing"));
+        root.Add(new Label("\nInput values for orbit testing"));
         Vector3Field inputR = new Vector3Field("Position");
         Vector3Field inputV = new Vector3Field("Velocity");
         ObjectField celestialBodyField = new ObjectField("Celestial Body");

@@ -104,16 +104,16 @@ public class Orbit {
         }
         else this.T = float.PositiveInfinity;
 
-        if (f != 0) this.t0 = Time.time - CalculateMeanAnomaly(orbitType) / n;
+        if (f != 0) this.t0 = GameSystem.CurrentTime() - CalculateMeanAnomaly(orbitType) / n;
         else this.t0 = 0;
         //Debug.Log(M);
 
-        CalculatePositionVelocityatTime(Time.time);
+        CalculatePositionVelocityatTime(GameSystem.CurrentTime());
 
         //CalculateOrbitalElementsFromPositionVelocity(position, velocity);
     }
 
-    public Vector3 GetPosition() { return bodyOfInfluence.transform.position + position; }
+    public Vector3 GetPosition() { return position + ((bodyOfInfluence.hasOrbit) ? bodyOfInfluence.GetOrbit().GetPosition() : bodyOfInfluence.transform.position); }
     public Vector3 GetLocalPosition() { return position; }
     public Vector3 GetVelocity() {
         if (bodyOfInfluence.hasOrbit) return bodyOfInfluence.GetOrbit().GetVelocity() + velocity;
@@ -124,7 +124,7 @@ public class Orbit {
     //public void SetBodyOfInfluence(Transform newBoI) { bodyOfInfluence = newBoI; }
     public Orbit NewOrbit(CelestialBody newBoI) {
         Orbit newOrbit =  new Orbit(
-            GetPosition() - newBoI.transform.position, // position local to newBoI
+            (newBoI.hasOrbit) ? GetPosition() - newBoI.GetOrbit().GetPosition() : GetPosition(), // position local to newBoI
             (newBoI.hasOrbit) ? GetVelocity() - newBoI.GetOrbit().GetVelocity() : GetVelocity(), // velocity local to newBoI
             newBoI,
             mainBodyMass
@@ -132,7 +132,9 @@ public class Orbit {
         return newOrbit;
     }
 
-    public float CalculateSphereOfInfluence() { return 0.9431f * a * Mathf.Pow(mainBodyMass / bodyOfInfluence.mass, (2 / 5)); }
+    public float CalculateSphereOfInfluence() {
+        return 0.9431f * a * Mathf.Pow(mainBodyMass / bodyOfInfluence.mass, (2f / 5f));
+    }
     //public float GetSphereOfInfluenceOf(CelestialBody bodyOfInfluence) {
     //    return 0.9431f * a * Mathf.Pow(mainBodyMass / bodyOfInfluence.mass, (2 / 5));
     //}
@@ -197,7 +199,7 @@ public class Orbit {
         }
         else this.T = float.PositiveInfinity;
 
-        t0 = Time.time - (M / n); // Sets the epoch to the time of periapsis
+        t0 = GameSystem.CurrentTime() - (M / n); // Sets the epoch to the time of periapsis
 
 
         if (GameSystem.LOG_ELEMENTS) {
@@ -271,23 +273,23 @@ public class Orbit {
         float sgp = gravconst * BOImass;
         Vector3 difference = BOIpos - pos;
         float r = difference.magnitude;
-        Vector3 gravacc = Time.deltaTime * (sgp / (r * r)) * difference.normalized;
+        Vector3 gravacc = GameSystem.DeltaTime() * (sgp / (r * r)) * difference.normalized;
         return gravacc;
     }
 
     // Adds the acceleration of a given force and recalculates orbital elements - also adds step in position
     public void AddForce(Vector3 force) {
-        Vector3 thrustacc = Time.deltaTime * force / mainBodyMass;
+        Vector3 thrustacc = GameSystem.DeltaTime() * force / mainBodyMass;
         // a = (GM)/r^2
 
         // The Vector3.zero would usually be the body of influence pos
         Vector3 difference = Vector3.zero - position;
         float r = difference.magnitude;
-        Vector3 gravacc = Time.deltaTime * (sgp / (r * r)) * difference.normalized;
+        Vector3 gravacc = GameSystem.DeltaTime() * (sgp / (r * r)) * difference.normalized;
 
         velocity += gravacc;
         velocity += thrustacc;
-        position += velocity * Time.deltaTime; // Adding acceleration of forces
+        position += velocity * GameSystem.DeltaTime(); // Adding acceleration of forces
         if (inStaticOrbit) CalculateOrbitalElementsFromPositionVelocity(position, velocity);
     }
 

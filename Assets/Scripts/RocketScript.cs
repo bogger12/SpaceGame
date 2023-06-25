@@ -36,17 +36,20 @@ public class RocketScript : MonoBehaviour {
     
     // Update is called once per frame
     private void Update() {
+
+        GameSystem.timeElapsed += GameSystem.DeltaTime();
+
         isThrust = false;
         if (Input.GetKey(KeyCode.W)) {
             rocketOrbit.AddForce(GameSystem.AngleToDirection(transform.rotation.eulerAngles.z));
             isThrust = true;
         }
 
-        if (Input.GetKey(KeyCode.Q)) GameSystem.Rotate(transform, rotateSpeed * Time.deltaTime);
-        if (Input.GetKey(KeyCode.E)) GameSystem.Rotate(transform, -rotateSpeed * Time.deltaTime);
+        if (Input.GetKey(KeyCode.Q)) GameSystem.Rotate(transform, rotateSpeed * GameSystem.DeltaTime());
+        if (Input.GetKey(KeyCode.E)) GameSystem.Rotate(transform, -rotateSpeed * GameSystem.DeltaTime());
 
         if (rocketOrbit.inStaticOrbit) {
-            rocketOrbit.CalculatePositionVelocityatTime(Time.time);
+            rocketOrbit.CalculatePositionVelocityatTime(GameSystem.CurrentTime());
             transform.position = rocketOrbit.GetPosition();
 
             rocketOrbit.CalculateExtraVariables();

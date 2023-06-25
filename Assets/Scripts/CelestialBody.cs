@@ -5,9 +5,6 @@ using UnityEngine;
 
 public class CelestialBody : MonoBehaviour {
 
-    public float mass;
-
-    public float radius;
     public float Radius {
         get { return radius; }
         set {
@@ -17,17 +14,8 @@ public class CelestialBody : MonoBehaviour {
             //Debug.Log(GetComponent<SpriteRenderer>().drawMode);
         }
     }
-    public bool hasCustomSOI;
-    public float radiusSOI;
 
-    //public bool hasSOI;
     public CircleCollider2D bodyCollider;
-
-    public bool rotate;
-    public bool hasOrbit;
-    public bool hasOrbitalLine;
-
-    public float rotateSpeed;
 
     public Vector3 initVelocity;
     public CelestialBody bodyOfInfluence;
@@ -38,8 +26,18 @@ public class CelestialBody : MonoBehaviour {
     private Orbit orbit = null;
     private LineRenderer lineRenderer;
 
-    public bool customOrbit;
+    public bool rotate = true;
+    public bool hasOrbit = true;
+    public bool customOrbit = true;
+    public bool hasOrbitalLine = true;
 
+    public bool hasCustomSOI = false;
+    public float radiusSOI;
+
+    public float mass;
+    public float radius;
+    public float density;
+    public float rotatePeriod;
     // If it has a custom orbit:
     public float e;
     public float a;
@@ -58,21 +56,24 @@ public class CelestialBody : MonoBehaviour {
         }
         if (hasOrbitalLine) SetupLineRenderer(ref lineRenderer);
         bodyCollider = GetComponent<CircleCollider2D>();
+        bodyCollider.radius = radius;
+        GetComponent<SpriteRenderer>().size = new Vector2(radius * 2, radius * 2);
     }
 
     // Update is called once per frame
     void Update()
     {
         if (hasOrbit) {
-            orbit.CalculatePositionVelocityatTime(Time.time);
+            orbit.CalculatePositionVelocityatTime(GameSystem.CurrentTime());
             //transform.position = GameSystem.VPixelSnap(orbit.GetPosition());
             transform.position = orbit.GetPosition();
 
             GameSystem.SetLineWidth(lineRenderer, GameSystem.pixelUnit * GameSystem.screenScale);
             orbit.DrawOrbitalLine(lineRenderer, 50, true);
+            if (GameSystem.DEBUG) Debug.DrawCircle(transform.position, radiusSOI, 20, Color.red);
         }
 
-        if (rotate) GameSystem.Rotate(transform, rotateSpeed * Time.deltaTime);
+        if (rotate) GameSystem.Rotate(transform, 2f*Mathf.PI*(GameSystem.DeltaTime()/rotatePeriod) );
 
     }
 

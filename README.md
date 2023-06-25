@@ -55,6 +55,7 @@ ___
 * https://en.wikipedia.org/wiki/Sphere_of_influence_(astrodynamics)
 * https://en.wikipedia.org/wiki/Hill_sphere
 * https://en.wikipedia.org/wiki/Roche_limit
+* https://en.wikipedia.org/wiki/Titius%E2%80%93Bode_law
 </details>
 
 <details open>

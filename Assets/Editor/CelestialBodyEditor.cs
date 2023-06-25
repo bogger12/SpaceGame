@@ -18,7 +18,7 @@ public class CelestialBodyEditor : Editor
     SerializedProperty radiusSOI;
 
     SerializedProperty rotate;
-    SerializedProperty rotateSpeed;
+    SerializedProperty rotatePeriod;
 
     SerializedProperty hasOrbit;
     SerializedProperty customOrbit;
@@ -46,7 +46,7 @@ public class CelestialBodyEditor : Editor
         radiusSOI = serializedObject.FindProperty("radiusSOI");
 
         rotate = serializedObject.FindProperty("rotate");
-        rotateSpeed = serializedObject.FindProperty("rotateSpeed");
+        rotatePeriod = serializedObject.FindProperty("rotatePeriod");
 
         hasOrbit = serializedObject.FindProperty("hasOrbit");
         customOrbit = serializedObject.FindProperty("customOrbit");
@@ -83,19 +83,20 @@ public class CelestialBodyEditor : Editor
 
 
         mass.floatValue = EditorGUILayout.FloatField("Mass:", mass.floatValue);
-        Radius.floatValue = EditorGUILayout.Slider("Radius:", Radius.floatValue, 0f, 50f);
+        Radius.floatValue = EditorGUILayout.FloatField("Radius:", Radius.floatValue);
+        body.Radius = Radius.floatValue;
         EditorGUILayout.BeginHorizontal();
         hasCustomSOI.boolValue = EditorGUILayout.Toggle("Override SOI", hasCustomSOI.boolValue);
         GUI.enabled = hasCustomSOI.boolValue;
-        radiusSOI.floatValue = EditorGUILayout.Slider(radiusSOI.floatValue, 0f, 750f);
+        radiusSOI.floatValue = EditorGUILayout.FloatField(radiusSOI.floatValue);
         GUI.enabled = true;
         EditorGUILayout.EndHorizontal();
 
 
         EditorGUILayout.BeginHorizontal();
-        rotate.boolValue = EditorGUILayout.Toggle("Rotation", rotate.boolValue);
+        rotate.boolValue = EditorGUILayout.Toggle("Rotation Period (s)", rotate.boolValue);
         GUI.enabled = rotate.boolValue;
-        rotateSpeed.floatValue = EditorGUILayout.Slider(rotateSpeed.floatValue, 0f, 750f);
+        rotatePeriod.floatValue = EditorGUILayout.FloatField(rotatePeriod.floatValue);
         GUI.enabled = true;
         EditorGUILayout.EndHorizontal();
 
@@ -119,12 +120,6 @@ public class CelestialBodyEditor : Editor
                 EditorGUIUtility.labelWidth = initwidth;
                 EditorGUILayout.LabelField("Body of Influence:");
                 bodyOfInfluence.objectReferenceValue = (CelestialBody)EditorGUILayout.ObjectField(bodyOfInfluence.objectReferenceValue, typeof(CelestialBody), true);
-                //save and load buttons
-                if (EditorApplication.isPlaying) { 
-                    if (GUILayout.Button("Apply")) {
-                        body.Start();
-                    }
-                }
             }
             else {
                 initVelocity.vector3Value = EditorGUILayout.Vector3Field("Initial Velocity:", initVelocity.vector3Value);
@@ -147,5 +142,11 @@ public class CelestialBodyEditor : Editor
         }
 
         serializedObject.ApplyModifiedProperties();
+        //save and load buttons
+        if (EditorApplication.isPlaying) {
+            if (GUILayout.Button("Apply")) {
+                body.Start();
+            }
+        }
     }
 }
