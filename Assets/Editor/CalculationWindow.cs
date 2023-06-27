@@ -4,29 +4,30 @@ using UnityEngine.UIElements;
 using UnityEditor.UIElements;
 
 
-public class TestWindow : EditorWindow
-{
-    [MenuItem("Window/UI Toolkit/TestWindow")]
-    public static void ShowExample()
-    {
-        TestWindow wnd = GetWindow<TestWindow>();
-        wnd.titleContent = new GUIContent("TestWindow");
+public class CalculationWindow : EditorWindow {
+    [MenuItem("Window/UI Toolkit/CalculationWindow")]
+    public static void ShowExample() {
+        CalculationWindow wnd = GetWindow<CalculationWindow>();
+        wnd.titleContent = new GUIContent("CalculationWindow");
     }
 
-    public void CreateGUI()
-    {
+    public void CreateGUI() {
         // Each editor window contains a root VisualElement object
         VisualElement root = rootVisualElement;
 
         // VisualElements objects can contain other VisualElement following a tree hierarchy.
 
-        root.Add(new Label("\nInput values for orbit testing"));
-        Vector3Field inputR = new Vector3Field("Position");
-        Vector3Field inputV = new Vector3Field("Velocity");
+
+        // find velocity needed, given gravity, masses, and radius
+
+        root.Add(new Label("\nInput values to find velocity needed:"));
+
+        
+        FloatField radius = new FloatField("Radius");
+        root.Add(radius);
+
         ObjectField celestialBodyField = new ObjectField("Celestial Body");
         celestialBodyField.objectType = typeof(CelestialBody);
-        root.Add(inputR);
-        root.Add(inputV);
         root.Add(celestialBodyField);
 
         Button but = new Button();
@@ -37,10 +38,10 @@ public class TestWindow : EditorWindow
 
         but.RegisterCallback<ClickEvent>((ClickEvent evt) => {
             if (celestialBodyField.value is null) resultLabel.text = "Make sure all fields are filled";
-            Orbit testOrbit = new Orbit(inputR.value, inputV.value, (CelestialBody)celestialBodyField.value, 1);
-            resultLabel.text += testOrbit.ToString() + "\n";
-            testOrbit.CalculatePositionVelocityatTime(GameSystem.CurrentTime(), true, false);
-            resultLabel.text += testOrbit.ToString();
+            CelestialBody bodyOfInfluence = (CelestialBody) celestialBodyField.value;
+            // To find centripetal velocity:
+            float velocity = Mathf.Sqrt((Orbit.gravconst * bodyOfInfluence.mass)/(radius.value));
+            resultLabel.text += "Velocity required: " + velocity + "m/s";
         });
         root.Add(but);
         root.Add(resultLabel);

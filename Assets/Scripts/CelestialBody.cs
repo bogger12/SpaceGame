@@ -71,7 +71,7 @@ public class CelestialBody : MonoBehaviour {
 
             GameSystem.SetLineWidth(lineRenderer, GameSystem.pixelUnit * GameSystem.screenScale);
             orbit.DrawOrbitalLine(lineRenderer, 50, true);
-            if (GameSystem.DEBUG) Debug.DrawCircle(transform.position, radiusSOI, 20, Color.red, 0);
+            if (GameSystem.DEBUG) Drawing.DrawCircle(transform.position, radiusSOI, 20, Color.red, Time.deltaTime*3f);
         }
 
         if (rotate) GameSystem.Rotate(transform, 2f*Mathf.PI*(GameSystem.DeltaTime()/rotatePeriod) );

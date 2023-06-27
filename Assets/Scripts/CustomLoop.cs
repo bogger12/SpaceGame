@@ -65,9 +65,15 @@ class CustomLoop : MonoBehaviour {
     //}
 
     public static void OrbitUpdates() {
-        GameObject.FindObjectOfType<RocketScript>().OrbitalUpdate();
-        Transform rootBody = GameObject.FindGameObjectWithTag("Root Body").transform;
-        RecursiveOrbitalUpdate(rootBody); // Calls each OrbitalUpdate function in recursive order from the root
+#if UNITY_EDITOR
+        if (Application.isPlaying) {
+#endif
+            Transform rootBody = GameObject.FindGameObjectWithTag("Root Body").transform;
+            RecursiveOrbitalUpdate(rootBody); // Calls each OrbitalUpdate function in recursive order from the root
+            GameObject.FindObjectOfType<RocketScript>().OrbitalUpdate();
+#if UNITY_EDITOR
+        }
+#endif
     }
 
     public static void RecursiveOrbitalUpdate(Transform rootBody) {

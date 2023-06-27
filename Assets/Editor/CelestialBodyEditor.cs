@@ -148,7 +148,7 @@ public class CelestialBodyEditor : Editor
                 body.Start();
             }
         }
-        Debug.DrawCircle(body.transform.position, body.CalculateSphereOfInfluence(), 20, Color.red, 100f);
+        //Debug.DrawCircle(body.transform.position, body.CalculateSphereOfInfluence(), 20, Color.red, 1f);
 
     }
 }

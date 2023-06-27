@@ -25,6 +25,7 @@ public static class GameSystem
 
     public static float CurrentTime() { return timeElapsed; }
     public static float DeltaTime() { return Time.deltaTime * timeScale; }
+    public static float FixedDeltaTime() { return Time.fixedDeltaTime * timeScale; }
 
     public static void Rotate(Transform transform, float angleRad) {
         transform.Rotate(new Vector3(0, 0, Mathf.Rad2Deg * angleRad));
